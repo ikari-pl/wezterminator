@@ -1,6 +1,6 @@
 [package]
 name = "wzt-preview"
-description = "wezterminator OSC preview protocol and (later) browser preview server"
+description = "wezterminator OSC preview protocol and browser preview server"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -11,6 +11,7 @@ base64.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
+tiny_http.workspace = true
 
 [lints]
 workspace = true

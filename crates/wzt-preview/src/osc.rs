@@ -36,7 +36,7 @@
 //!
 //! The TUI reads stdin in raw mode, consumes the token via [`AckParser`], and
 //! never treats those bytes as keypresses. No ack within [`ACK_TIMEOUT`] means
-//! browser-mode fallback (U14 fleshes the server; U12 only switches mode).
+//! browser-mode fallback ([`crate::server::PreviewServer`]).
 //!
 //! # Expiry
 //!
@@ -80,7 +80,7 @@ const ACK_TAG: &[u8] = b"wzt;ack=";
 pub enum PreviewMode {
     /// Live WezTerm window via OSC + ack handshake.
     WezTerm,
-    /// Approximate browser preview (server is U14; mode is set here on timeout).
+    /// Approximate browser preview via [`crate::server::PreviewServer`].
     Browser,
 }
 
