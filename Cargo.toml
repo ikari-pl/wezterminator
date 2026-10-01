@@ -1,6 +1,13 @@
 [workspace]
 resolver = "3"
-members = ["crates/wzt-model", "crates/wzt-stats", "crates/wzt-art", "crates/wezterminator"]
+members = [
+    "crates/wzt-model",
+    "crates/wzt-stats",
+    "crates/wzt-art",
+    "crates/wzt-fonts",
+    "crates/wzt-ops",
+    "crates/wezterminator",
+]
 
 [workspace.package]
 version = "0.1.0"
@@ -12,6 +19,7 @@ publish = false
 blake3 = "1"
 clap = { version = "4", features = ["derive"] }
 etcetera = "0.11"
+fontique = "0.11"
 # Decoding only: wzt-art reads source images for import and writes PNGs through `png`.
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif"] }
 png = "0.18"
@@ -20,11 +28,14 @@ serde = { version = "1", features = ["derive"] }
 # preserve_order keeps object key order stable through read and write, so
 # hand-edited files diff cleanly after the TUI rewrites them.
 serde_json = { version = "1", features = ["preserve_order"] }
+skrifa = "0.47"
 tempfile = "3"
 thiserror = "2"
 
 wzt-art = { path = "crates/wzt-art" }
+wzt-fonts = { path = "crates/wzt-fonts" }
 wzt-model = { path = "crates/wzt-model" }
+wzt-ops = { path = "crates/wzt-ops" }
 wzt-stats = { path = "crates/wzt-stats" }
 
 [workspace.lints.rust]

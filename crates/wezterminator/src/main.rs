@@ -9,6 +9,7 @@
 use std::process::ExitCode;
 
 mod art;
+mod doctor;
 
 use clap::{Args, Parser, Subcommand};
 use wzt_model::Paths;
@@ -48,7 +49,7 @@ enum Command {
     /// Write one key=value line of system stats to the status cache.
     Stats(StatsArgs),
     /// Check fonts, art, screens and the install, and say what is wrong.
-    Doctor(Pending),
+    Doctor(doctor::DoctorArgs),
     /// Install wezterminator in add-on, replace or replace-and-import mode.
     Install(Pending),
     /// Undo an install from its manifest.
@@ -67,7 +68,7 @@ impl Command {
             Command::Tui(_) => Some(("tui", "U12")),
             Command::Art(args) => args.command.stub(),
             Command::Stats(_) => None,
-            Command::Doctor(_) => Some(("doctor", "U11")),
+            Command::Doctor(_) => None,
             Command::Install(_) => Some(("install", "U15")),
             Command::Uninstall(_) => Some(("uninstall", "U15")),
             Command::Fleet(_) => Some(("fleet", "U16")),
@@ -127,15 +128,31 @@ fn art_command(args: &art::ArtArgs) -> ExitCode {
     }
 }
 
+/// `wezterminator doctor`.
+fn doctor_command(args: &doctor::DoctorArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator doctor: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    doctor::run(&paths, args)
+}
+
 fn main() -> ExitCode {
     let cli = Cli::parse();
     if let Command::Stats(args) = &cli.command {
         return stats(args);
     }
     if let Command::Art(args) = &cli.command
-        && args.command.stub().is_none() {
-            return art_command(args);
-        }
+        && args.command.stub().is_none()
+    {
+        return art_command(args);
+    }
+    if let Command::Doctor(args) = &cli.command {
+        return doctor_command(args);
+    }
     if let Some((name, unit)) = cli.command.stub() {
         eprintln!("wezterminator {name}: not implemented yet (planned in {unit})");
     }
@@ -169,7 +186,7 @@ mod tests {
         assert_eq!(stub(&["wezterminator", "art", "check", "ember"]), None);
         assert_eq!(stub(&["wezterminator", "art", "import", "x.png"]), Some(("art import", "U9")));
         assert_eq!(stub(&["wezterminator", "stats", "--stdout"]), None);
-        assert_eq!(stub(&["wezterminator", "doctor"]), Some(("doctor", "U11")));
+        assert_eq!(stub(&["wezterminator", "doctor"]), None);
     }
 
     #[test]
