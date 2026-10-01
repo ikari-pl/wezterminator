@@ -1,11 +1,14 @@
 //! The `wezterminator` binary.
 //!
-//! Subcommands are stubs until their unit lands (`stats` is real, from U6).
+//! Subcommands are stubs until their unit lands (`stats` is real, from U6, and
+//! `art generate` and `art check` from U7).
 //! Each stub accepts and ignores trailing arguments, so scripts written
 //! against the planned interface fail with the "not implemented" message
 //! rather than a usage error.
 
 use std::process::ExitCode;
+
+mod art;
 
 use clap::{Args, Parser, Subcommand};
 use wzt_model::Paths;
@@ -24,9 +27,9 @@ struct Cli {
 
 /// Arguments the real subcommand will define; accepted and ignored for now.
 #[derive(Debug, Args)]
-struct Pending {
+pub(crate) struct Pending {
     #[arg(trailing_var_arg = true, allow_hyphen_values = true, hide = true)]
-    args: Vec<String>,
+    pub(crate) args: Vec<String>,
 }
 
 #[derive(Debug, Args)]
@@ -41,7 +44,7 @@ enum Command {
     /// Browse presets and edit theme parts, previewing live in WezTerm.
     Tui(Pending),
     /// Generate, import and pack theme art.
-    Art(Pending),
+    Art(art::ArtArgs),
     /// Write one key=value line of system stats to the status cache.
     Stats(StatsArgs),
     /// Check fonts, art, screens and the install, and say what is wrong.
@@ -62,7 +65,7 @@ impl Command {
     fn stub(&self) -> Option<(&'static str, &'static str)> {
         match self {
             Command::Tui(_) => Some(("tui", "U12")),
-            Command::Art(_) => Some(("art", "U7")),
+            Command::Art(args) => args.command.stub(),
             Command::Stats(_) => None,
             Command::Doctor(_) => Some(("doctor", "U11")),
             Command::Install(_) => Some(("install", "U15")),
@@ -106,11 +109,33 @@ fn stats(args: &StatsArgs) -> ExitCode {
     }
 }
 
+/// `wezterminator art generate|check`.
+fn art_command(args: &art::ArtArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator art: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    match art::run(&paths, args) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(message) => {
+            eprintln!("wezterminator art: {message}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
 fn main() -> ExitCode {
     let cli = Cli::parse();
     if let Command::Stats(args) = &cli.command {
         return stats(args);
     }
+    if let Command::Art(args) = &cli.command
+        && args.command.stub().is_none() {
+            return art_command(args);
+        }
     if let Some((name, unit)) = cli.command.stub() {
         eprintln!("wezterminator {name}: not implemented yet (planned in {unit})");
     }
@@ -137,11 +162,23 @@ mod tests {
     }
 
     #[test]
-    fn stats_is_real_and_every_other_subcommand_is_still_a_stub() {
+    fn stats_and_art_generate_are_real_and_the_rest_are_still_stubs() {
         let stub = |args: &[&str]| Cli::try_parse_from(args).unwrap().command.stub();
         assert_eq!(stub(&["wezterminator", "stats"]), None);
+        assert_eq!(stub(&["wezterminator", "art", "generate", "cpc-cool", "--size", "3840x2160"]), None);
+        assert_eq!(stub(&["wezterminator", "art", "check", "ember"]), None);
+        assert_eq!(stub(&["wezterminator", "art", "import", "x.png"]), Some(("art import", "U9")));
         assert_eq!(stub(&["wezterminator", "stats", "--stdout"]), None);
         assert_eq!(stub(&["wezterminator", "doctor"]), Some(("doctor", "U11")));
+    }
+
+    #[test]
+    fn art_generate_validates_its_arguments() {
+        assert!(Cli::try_parse_from(["wezterminator", "art", "generate"]).is_err());
+        assert!(Cli::try_parse_from(["wezterminator", "art", "generate", "x", "--size", "big"]).is_err());
+        assert!(Cli::try_parse_from(["wezterminator", "art", "generate", "x", "--size", "0x10"]).is_err());
+        let ok = Cli::try_parse_from(["wezterminator", "art", "generate", "x", "--size", "6016x3384", "--threads", "4", "--skip-legibility"]);
+        assert!(ok.is_ok());
     }
 
     #[test]
