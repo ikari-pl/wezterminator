@@ -286,6 +286,12 @@ function M.apply_to_config(config, opts)
 
   overrides.setup()
 
+  -- OSC preview protocol (TUI → engine). Speaks user-var-changed only; expiry
+  -- rules stay in overrides.lua.
+  require('wzt.preview').setup({
+    preview_payload = M.preview_payload,
+  })
+
   -- Everything that writes a file runs from a GUI event, once per process, and
   -- only when the content differs. wezterm.gui is nil inside the mux server.
   wezterm.on('update-status', function(_window, _pane)

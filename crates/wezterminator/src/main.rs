@@ -1,11 +1,12 @@
 //! The `wezterminator` binary.
 //!
-//! Subcommands are stubs until their unit lands (`stats` is real, from U6, and
-//! `art generate` and `art check` from U7).
+//! Subcommands are stubs until their unit lands (`stats` is real, from U6;
+//! `art generate` and `art check` from U7; `doctor` from U11; `tui` from U12).
 //! Each stub accepts and ignores trailing arguments, so scripts written
 //! against the planned interface fail with the "not implemented" message
 //! rather than a usage error.
 
+use std::path::PathBuf;
 use std::process::ExitCode;
 
 mod art;
@@ -13,6 +14,7 @@ mod doctor;
 
 use clap::{Args, Parser, Subcommand};
 use wzt_model::Paths;
+use wzt_tui::{PreviewMode, RunOptions, run as run_tui};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -40,10 +42,24 @@ struct StatsArgs {
     stdout: bool,
 }
 
+#[derive(Debug, Args)]
+struct TuiArgs {
+    /// Directory of a wezterminator checkout holding built-in presets/themes.
+    /// Defaults to the current directory when it has a `presets/` folder.
+    #[arg(long, value_name = "DIR")]
+    checkout: Option<PathBuf>,
+    /// Force browser-mode preview (skip WezTerm OSC handshake).
+    #[arg(long)]
+    browser: bool,
+    /// Force WezTerm OSC mode without waiting for an ack (for scripting/tests).
+    #[arg(long)]
+    wezterm: bool,
+}
+
 #[derive(Debug, Subcommand)]
 enum Command {
     /// Browse presets and edit theme parts, previewing live in WezTerm.
-    Tui(Pending),
+    Tui(TuiArgs),
     /// Generate, import and pack theme art.
     Art(art::ArtArgs),
     /// Write one key=value line of system stats to the status cache.
@@ -65,7 +81,7 @@ impl Command {
     /// the subcommand is real.
     fn stub(&self) -> Option<(&'static str, &'static str)> {
         match self {
-            Command::Tui(_) => Some(("tui", "U12")),
+            Command::Tui(_) => None,
             Command::Art(args) => args.command.stub(),
             Command::Stats(_) => None,
             Command::Doctor(_) => None,
@@ -140,6 +156,46 @@ fn doctor_command(args: &doctor::DoctorArgs) -> ExitCode {
     doctor::run(&paths, args)
 }
 
+/// `wezterminator tui`.
+fn tui_command(args: &TuiArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator tui: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    let checkout = args.checkout.clone().or_else(default_checkout);
+    let force_mode = if args.browser {
+        Some(PreviewMode::Browser)
+    } else if args.wezterm {
+        Some(PreviewMode::WezTerm)
+    } else {
+        None
+    };
+    let opts = RunOptions {
+        checkout,
+        force_mode,
+        skip_handshake: args.wezterm || args.browser,
+    };
+    match run_tui(&paths, opts) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            eprintln!("wezterminator tui: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn default_checkout() -> Option<PathBuf> {
+    let cwd = std::env::current_dir().ok()?;
+    if cwd.join("presets").is_dir() && cwd.join("themes").is_dir() {
+        Some(cwd)
+    } else {
+        None
+    }
+}
+
 fn main() -> ExitCode {
     let cli = Cli::parse();
     if let Command::Stats(args) = &cli.command {
@@ -152,6 +208,9 @@ fn main() -> ExitCode {
     }
     if let Command::Doctor(args) = &cli.command {
         return doctor_command(args);
+    }
+    if let Command::Tui(args) = &cli.command {
+        return tui_command(args);
     }
     if let Some((name, unit)) = cli.command.stub() {
         eprintln!("wezterminator {name}: not implemented yet (planned in {unit})");
@@ -179,7 +238,7 @@ mod tests {
     }
 
     #[test]
-    fn stats_and_art_generate_are_real_and_the_rest_are_still_stubs() {
+    fn stats_art_doctor_and_tui_are_real_and_the_rest_are_still_stubs() {
         let stub = |args: &[&str]| Cli::try_parse_from(args).unwrap().command.stub();
         assert_eq!(stub(&["wezterminator", "stats"]), None);
         assert_eq!(stub(&["wezterminator", "art", "generate", "cpc-cool", "--size", "3840x2160"]), None);
@@ -187,6 +246,8 @@ mod tests {
         assert_eq!(stub(&["wezterminator", "art", "import", "x.png"]), Some(("art import", "U9")));
         assert_eq!(stub(&["wezterminator", "stats", "--stdout"]), None);
         assert_eq!(stub(&["wezterminator", "doctor"]), None);
+        assert_eq!(stub(&["wezterminator", "tui"]), None);
+        assert_eq!(stub(&["wezterminator", "tui", "--browser"]), None);
     }
 
     #[test]
@@ -194,7 +255,17 @@ mod tests {
         assert!(Cli::try_parse_from(["wezterminator", "art", "generate"]).is_err());
         assert!(Cli::try_parse_from(["wezterminator", "art", "generate", "x", "--size", "big"]).is_err());
         assert!(Cli::try_parse_from(["wezterminator", "art", "generate", "x", "--size", "0x10"]).is_err());
-        let ok = Cli::try_parse_from(["wezterminator", "art", "generate", "x", "--size", "6016x3384", "--threads", "4", "--skip-legibility"]);
+        let ok = Cli::try_parse_from([
+            "wezterminator",
+            "art",
+            "generate",
+            "x",
+            "--size",
+            "6016x3384",
+            "--threads",
+            "4",
+            "--skip-legibility",
+        ]);
         assert!(ok.is_ok());
     }
 
@@ -206,6 +277,25 @@ mod tests {
     #[test]
     fn stubs_accept_trailing_arguments() {
         let cli = Cli::try_parse_from(["wezterminator", "fleet", "pull", "--ff-only"]).unwrap();
-        assert!(matches!(cli.command, Command::Fleet(Pending { ref args }) if args == &["pull", "--ff-only"]));
+        assert!(
+            matches!(cli.command, Command::Fleet(Pending { ref args }) if args == &["pull", "--ff-only"])
+        );
+    }
+
+    #[test]
+    fn tui_parses_mode_flags() {
+        let cli =
+            Cli::try_parse_from(["wezterminator", "tui", "--browser", "--checkout", "/tmp/wzt"])
+                .unwrap();
+        match cli.command {
+            Command::Tui(args) => {
+                assert!(args.browser);
+                assert_eq!(
+                    args.checkout.as_deref(),
+                    Some(std::path::Path::new("/tmp/wzt"))
+                );
+            }
+            other => panic!("expected Tui, got {other:?}"),
+        }
     }
 }

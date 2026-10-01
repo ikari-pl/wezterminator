@@ -210,16 +210,84 @@ function M.new(opts)
     }
   end
 
+  -- wezterm.time: now() for clocks, call_after for auto-scroll (U10).
+  stub.timers = {}
+  stub.clock_ms = opts.clock_ms or 10000
+  wezterm.time = {
+    now = function()
+      return {
+        format = function(_, fmt)
+          -- Match WezTerm's `%s%f` → unix seconds + fractional, then callers
+          -- take the first 13 chars as milliseconds.
+          local secs = math.floor(stub.clock_ms / 1000)
+          local frac = string.format('%06d', (stub.clock_ms % 1000) * 1000)
+          if fmt == '%s%f' then
+            return tostring(secs) .. frac
+          end
+          return tostring(secs)
+        end,
+      }
+    end,
+    call_after = function(secs, fn)
+      stub.timers[#stub.timers + 1] = { after = secs, fn = fn }
+    end,
+  }
+  --- Fire every pending call_after callback once (new schedules stay queued).
+  function stub.fire_timers()
+    local pending = stub.timers
+    stub.timers = {}
+    for _, t in ipairs(pending) do
+      t.fn()
+    end
+  end
+  --- Drain up to `n` timer generations (each fire may re-schedule).
+  function stub.fire_timer_generations(n)
+    for _ = 1, n do
+      if #stub.timers == 0 then
+        return
+      end
+      stub.fire_timers()
+    end
+  end
+
   ---------------------------------------------------------------------------
   -- Windows
   ---------------------------------------------------------------------------
 
   local next_id = 1
+  local next_pane_id = 1
+  function stub.new_pane(window)
+    local p = {
+      id = next_pane_id,
+      window = window,
+      sent = {},
+    }
+    next_pane_id = next_pane_id + 1
+    function p:pane_id()
+      return self.id
+    end
+    --- Emulates pane:send_text used by preview.lua for the TUI ack token.
+    function p:send_text(text)
+      self.sent[#self.sent + 1] = text
+      stub.sent_texts = stub.sent_texts or {}
+      stub.sent_texts[#stub.sent_texts + 1] = { pane = self.id, text = text }
+    end
+    function p:get_user_vars()
+      return deep_copy(self._user_vars or {})
+    end
+    stub.panes = stub.panes or {}
+    stub.panes[#stub.panes + 1] = p
+    return p
+  end
+
   function stub.new_window()
-    local w = { id = next_id, writes = 0, _overrides = nil, closed = false }
+    local w = { id = next_id, writes = 0, _overrides = nil, closed = false, focused = true }
     next_id = next_id + 1
     function w:window_id()
       return self.id
+    end
+    function w:is_focused()
+      return self.focused ~= false
     end
     function w:get_config_overrides()
       return deep_copy(self._overrides) -- nil when never set

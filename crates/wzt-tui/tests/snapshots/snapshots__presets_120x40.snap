@@ -1,0 +1,44 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  presets  ·  preview:wezterm  ·  tab:parts  ·  enter:commit  ·  esc:cancel                            
+┌ Presets ─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  *  CPC Cool                builtin:cpc-cool  [builtin]                                                              │
+│>    Ember                   builtin:ember     [builtin]                                                              │
+│     Soft Nebula             builtin:soft-nebula  [builtin]                                                           │
+│     Mine                    local:mine        [local]                                                                │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+wezterm preview

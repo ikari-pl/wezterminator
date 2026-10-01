@@ -1,0 +1,44 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  parts of builtin:ember  ·  mode:add-on  ·  tab:presets  ·  esc:back                                  
+┌ Theme parts (! = overruled by user config in add-on mode) ───────────────────────────────────────────────────────────┐
+│>   art       art · Ember                               src:builtin                                                   │
+│    scheme    scheme · Ember                            src:builtin                                                   │
+│    palette   palette · Ember                           src:builtin                                                   │
+│  ! font      font · Ember                              src:builtin  [overruled]                                      │
+│    chrome    chrome · Ember                            src:builtin                                                   │
+│    status    status · Ember                            src:builtin                                                   │
+│    motion    motion · Ember                            src:builtin                                                   │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+│                                                                                                                      │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+wezterm preview

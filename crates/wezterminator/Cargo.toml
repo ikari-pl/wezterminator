@@ -16,6 +16,7 @@ wzt-art.workspace = true
 wzt-model.workspace = true
 wzt-ops.workspace = true
 wzt-stats.workspace = true
+wzt-tui.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
