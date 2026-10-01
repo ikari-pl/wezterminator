@@ -199,7 +199,7 @@ function M.plan(opts)
   -- Leader.
   local ul = opts.user_leader
   if ul then
-    if M.normalize(ul.key, ul.mods) == M.normalize(M.LEADER.key, M.LEADER.mods) then
+    if addon and M.normalize(ul.key, ul.mods) == M.normalize(M.LEADER.key, M.LEADER.mods) then
       result.conflicts[#result.conflicts + 1] = {
         kind = 'leader',
         id = 'leader',

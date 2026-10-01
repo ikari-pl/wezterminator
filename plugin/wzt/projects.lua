@@ -6,7 +6,7 @@
 -- its directory, so each project keeps its own independent tabs and panes.
 --
 -- There are NO personal defaults: with no `project_roots` in the machine
--- settings the picker says how to configure it instead of guessing ~/src.
+-- settings the picker says how to configure it instead of guessing a directory.
 
 local wezterm = require 'wezterm'
 local common = require 'wzt.segments.common'
