@@ -1,0 +1,462 @@
+{
+  "_": "Same world as resolve-basic with '_' and '_<key>' comments injected at every object depth (theme root, palette, layer entries, keyed maps like params, corrections and push_targets, array items, state, machine, overrides). Must resolve exactly as resolve-basic and no key starting with '_' may appear in the output.",
+  "name": "resolve-comment-keys",
+  "kind": "resolution",
+  "covers": ["comment-keys"],
+  "input": {
+    "engine": {"supported_schema_version": 1, "default_preset": "builtin:neon-night"},
+    "layers": {
+      "builtin": {
+        "presets": [
+          {
+            "_": "comment on this object (depth 0)",
+            "schema_version": 1,
+            "id": "builtin:neon-night",
+            "name": "Neon Night",
+            "based_on": null,
+            "_parts": "comment on sibling key 'parts'",
+            "parts": {
+              "_": "comment on this object (depth 1)",
+              "_art": "comment on sibling key 'art'",
+              "art": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+              "_scheme": "comment on sibling key 'scheme'",
+              "scheme": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+              "_palette": "comment on sibling key 'palette'",
+              "palette": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+              "_font": "comment on sibling key 'font'",
+              "font": {
+                "_": "comment on this object (depth 2)",
+                "preferred": ["Terminess Nerd Font"],
+                "fallback": ["JetBrains Mono", "Menlo"]
+              },
+              "_chrome": "comment on sibling key 'chrome'",
+              "chrome": {"_": "comment on this object (depth 2)", "opacity": 1},
+              "_status": "comment on sibling key 'status'",
+              "status": {
+                "_": "comment on this object (depth 2)",
+                "style": "sparkline",
+                "segments": ["load", "memory", "clock"]
+              },
+              "_motion": "comment on sibling key 'motion'",
+              "motion": {"_": "comment on this object (depth 2)", "scrollback_parallax": false}
+            }
+          },
+          {
+            "_": "comment on this object (depth 0)",
+            "schema_version": 1,
+            "id": "builtin:dusk-calm",
+            "name": "Dusk Calm",
+            "based_on": null,
+            "_parts": "comment on sibling key 'parts'",
+            "parts": {
+              "_": "comment on this object (depth 1)",
+              "_art": "comment on sibling key 'art'",
+              "art": {"_": "comment on this object (depth 2)", "theme": "builtin:dusk"},
+              "_scheme": "comment on sibling key 'scheme'",
+              "scheme": {"_": "comment on this object (depth 2)", "wezterm_scheme": "Gruvbox Dark"},
+              "_palette": "comment on sibling key 'palette'",
+              "palette": {"_": "comment on this object (depth 2)", "theme": "builtin:dusk"},
+              "_font": "comment on sibling key 'font'",
+              "font": {
+                "_": "comment on this object (depth 2)",
+                "preferred": ["Terminess Nerd Font"],
+                "fallback": ["JetBrains Mono", "Menlo"]
+              },
+              "_chrome": "comment on sibling key 'chrome'",
+              "chrome": {"_": "comment on this object (depth 2)", "opacity": 0.95, "blur": 10},
+              "_status": "comment on sibling key 'status'",
+              "status": {
+                "_": "comment on this object (depth 2)",
+                "style": "pill",
+                "segments": ["cwd", "clock"]
+              },
+              "_motion": "comment on sibling key 'motion'",
+              "motion": {"_": "comment on this object (depth 2)"}
+            }
+          }
+        ],
+        "themes": [
+          {
+            "_": "comment on this object (depth 0)",
+            "schema_version": 1,
+            "id": "builtin:neon",
+            "name": "Neon",
+            "variant": "dark",
+            "_palette": "comment on sibling key 'palette'",
+            "palette": {
+              "_": "comment on this object (depth 1)",
+              "_ui": "comment on sibling key 'ui'",
+              "ui": {
+                "_": "comment on this object (depth 2)",
+                "bg": "#0a0a12",
+                "surface": "#14141f",
+                "fg": "#e0e0e0",
+                "fg_dim": "#7a7a8c",
+                "accent": "#00ff9c",
+                "ok": "#00cc66",
+                "warn": "#ffaa00",
+                "bad": "#ff4455",
+                "info": "#33aaff",
+                "tab_bar_bg": "#0a0a12",
+                "tab_active_bg": "#14141f",
+                "tab_active_fg": "#00ff9c",
+                "tab_inactive_bg": "#0a0a12",
+                "tab_inactive_fg": "#7a7a8c"
+              },
+              "_scheme": "comment on sibling key 'scheme'",
+              "scheme": {
+                "_": "comment on this object (depth 2)",
+                "foreground": "#e0e0e0",
+                "background": "#0a0a12",
+                "cursor_bg": "#00ff9c",
+                "cursor_fg": "#0a0a12",
+                "selection_bg": "#2a2a40",
+                "selection_fg": "#e0e0e0",
+                "ansi": [
+                  "#0a0a12",
+                  "#ff4455",
+                  "#00cc66",
+                  "#ffaa00",
+                  "#3366ff",
+                  "#cc44ff",
+                  "#33aaff",
+                  "#e0e0e0"
+                ],
+                "brights": [
+                  "#444466",
+                  "#ff7788",
+                  "#44ee99",
+                  "#ffcc55",
+                  "#6699ff",
+                  "#dd77ff",
+                  "#77ccff",
+                  "#ffffff"
+                ]
+              }
+            },
+            "_art": "comment on sibling key 'art'",
+            "art": {
+              "_": "comment on this object (depth 1)",
+              "seed": 7,
+              "base_color": "#0a0a12",
+              "layers": [
+                {
+                  "_": "comment on this object (depth 3)",
+                  "id": "stars",
+                  "primitive": "starfield",
+                  "scale": 2,
+                  "opacity": 0.5,
+                  "_parallax": "comment on sibling key 'parallax'",
+                  "parallax": {"_": "comment on this object (depth 4)", "vertical": 0.2, "horizontal": 0},
+                  "_params": "comment on sibling key 'params'",
+                  "params": {"_": "comment on this object (depth 4)", "count": 80}
+                },
+                {
+                  "_": "comment on this object (depth 3)",
+                  "id": "grid",
+                  "primitive": "perspective_grid",
+                  "scale": 3,
+                  "opacity": 0.8,
+                  "_parallax": "comment on sibling key 'parallax'",
+                  "parallax": {"_": "comment on this object (depth 4)", "vertical": 0.5}
+                }
+              ]
+            },
+            "fallback_layers": [{"_": "comment on this object (depth 2)", "kind": "color", "color": "#0a0a12"}],
+            "_legibility": "comment on sibling key 'legibility'",
+            "legibility": {"_": "comment on this object (depth 1)", "text": "#e0e0e0", "dim_text": "#7a7a8c"},
+            "_motion": "comment on sibling key 'motion'",
+            "motion": {
+              "_": "comment on this object (depth 1)",
+              "scrollback_parallax": true,
+              "_alt_wheel_scroll": "comment on sibling key 'alt_wheel_scroll'",
+              "alt_wheel_scroll": {"_": "comment on this object (depth 2)", "vertical": true, "horizontal": false},
+              "_auto_scroll": "comment on sibling key 'auto_scroll'",
+              "auto_scroll": {"_": "comment on this object (depth 2)", "enabled": false, "speed": 0}
+            }
+          },
+          {
+            "_": "comment on this object (depth 0)",
+            "schema_version": 1,
+            "id": "builtin:dusk",
+            "name": "Dusk",
+            "variant": "dark",
+            "_palette": "comment on sibling key 'palette'",
+            "palette": {
+              "_": "comment on this object (depth 1)",
+              "_ui": "comment on sibling key 'ui'",
+              "ui": {
+                "_": "comment on this object (depth 2)",
+                "bg": "#0a0a12",
+                "surface": "#14141f",
+                "fg": "#e0e0e0",
+                "fg_dim": "#7a7a8c",
+                "accent": "#ff8800",
+                "ok": "#00cc66",
+                "warn": "#ffaa00",
+                "bad": "#ff4455",
+                "info": "#33aaff",
+                "tab_bar_bg": "#0a0a12",
+                "tab_active_bg": "#14141f",
+                "tab_active_fg": "#ff8800",
+                "tab_inactive_bg": "#0a0a12",
+                "tab_inactive_fg": "#7a7a8c"
+              },
+              "_scheme": "comment on sibling key 'scheme'",
+              "scheme": {
+                "_": "comment on this object (depth 2)",
+                "foreground": "#e0e0e0",
+                "background": "#0a0a12",
+                "cursor_bg": "#ff8800",
+                "cursor_fg": "#0a0a12",
+                "selection_bg": "#2a2a40",
+                "selection_fg": "#e0e0e0",
+                "ansi": [
+                  "#0a0a12",
+                  "#ff4455",
+                  "#00cc66",
+                  "#ffaa00",
+                  "#3366ff",
+                  "#cc44ff",
+                  "#33aaff",
+                  "#e0e0e0"
+                ],
+                "brights": [
+                  "#444466",
+                  "#ff7788",
+                  "#44ee99",
+                  "#ffcc55",
+                  "#6699ff",
+                  "#dd77ff",
+                  "#77ccff",
+                  "#ffffff"
+                ]
+              }
+            },
+            "_art": "comment on sibling key 'art'",
+            "art": {
+              "_": "comment on this object (depth 1)",
+              "seed": 7,
+              "base_color": "#0a0a12",
+              "layers": [
+                {
+                  "_": "comment on this object (depth 3)",
+                  "id": "haze",
+                  "primitive": "dither_wash",
+                  "scale": 2,
+                  "opacity": 0.4,
+                  "_parallax": "comment on sibling key 'parallax'",
+                  "parallax": {"_": "comment on this object (depth 4)", "vertical": 0.1}
+                }
+              ]
+            },
+            "fallback_layers": [{"_": "comment on this object (depth 2)", "kind": "color", "color": "#0a0a12"}],
+            "_legibility": "comment on sibling key 'legibility'",
+            "legibility": {"_": "comment on this object (depth 1)", "text": "#e0e0e0", "dim_text": "#7a7a8c"}
+          }
+        ],
+        "overrides": null,
+        "machine": null
+      },
+      "fleet": {
+        "presets": [],
+        "themes": [],
+        "overrides": {
+          "_": "comment on this object (depth 0)",
+          "schema_version": 1,
+          "_parts": "comment on sibling key 'parts'",
+          "parts": {
+            "_": "comment on this object (depth 1)",
+            "_chrome": "comment on sibling key 'chrome'",
+            "chrome": {"_": "comment on this object (depth 2)", "opacity": 0.9}
+          }
+        },
+        "machine": {
+          "_": "comment on this object (depth 0)",
+          "schema_version": 1,
+          "_push_targets": "comment on sibling key 'push_targets'",
+          "push_targets": {
+            "_": "comment on this object (depth 1)",
+            "_nas": "comment on sibling key 'nas'",
+            "nas": {"_": "comment on this object (depth 2)", "hosts": ["nas.lan"], "user": "ops"}
+          },
+          "vpn_probes": [
+            {
+              "_": "comment on this object (depth 2)",
+              "id": "ts",
+              "kind": "tailscale",
+              "enabled": true
+            }
+          ]
+        }
+      },
+      "local": {
+        "presets": [
+          {
+            "_": "comment on this object (depth 0)",
+            "schema_version": 1,
+            "id": "local:mine",
+            "name": "Mine",
+            "based_on": "builtin:neon-night",
+            "_parts": "comment on sibling key 'parts'",
+            "parts": {
+              "_": "comment on this object (depth 1)",
+              "_art": "comment on sibling key 'art'",
+              "art": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+              "_scheme": "comment on sibling key 'scheme'",
+              "scheme": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+              "_palette": "comment on sibling key 'palette'",
+              "palette": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+              "_font": "comment on sibling key 'font'",
+              "font": {
+                "_": "comment on this object (depth 2)",
+                "preferred": ["Terminess Nerd Font"],
+                "fallback": ["JetBrains Mono", "Menlo"],
+                "size": 14,
+                "_corrections": "comment on sibling key 'corrections'",
+                "corrections": {"_": "comment on this object (depth 3)", "Terminess Nerd Font": 1.5}
+              },
+              "_chrome": "comment on sibling key 'chrome'",
+              "chrome": {"_": "comment on this object (depth 2)", "opacity": 1},
+              "_status": "comment on sibling key 'status'",
+              "status": {
+                "_": "comment on this object (depth 2)",
+                "style": "sparkline",
+                "segments": ["load", "memory", "clock"]
+              },
+              "_motion": "comment on sibling key 'motion'",
+              "motion": {"_": "comment on this object (depth 2)", "scrollback_parallax": false}
+            }
+          }
+        ],
+        "themes": [],
+        "overrides": null,
+        "machine": null
+      }
+    },
+    "state": {
+      "_": "comment on this object (depth 0)",
+      "schema_version": 1,
+      "active_preset": "local:mine",
+      "history": []
+    },
+    "environment": {"installed_fonts": null},
+    "addon": null
+  },
+  "expected": {
+    "active": {"requested": "local:mine", "id": "local:mine", "fell_back": false},
+    "catalog": [
+      {"id": "builtin:dusk-calm", "name": "Dusk Calm", "layer": "builtin", "shadowed_by": null},
+      {
+        "id": "builtin:neon-night",
+        "name": "Neon Night",
+        "layer": "builtin",
+        "shadowed_by": null
+      },
+      {"id": "local:mine", "name": "Mine", "layer": "local", "shadowed_by": null}
+    ],
+    "resolved": {
+      "id": "local:mine",
+      "name": "Mine",
+      "based_on": "builtin:neon-night",
+      "parts": {
+        "art": {
+          "theme": "builtin:neon",
+          "seed": 7,
+          "base_color": "#0a0a12",
+          "layers": [
+            {
+              "id": "stars",
+              "primitive": "starfield",
+              "scale": 2,
+              "opacity": 0.5,
+              "parallax": {"vertical": 0.2, "horizontal": 0},
+              "params": {"count": 80}
+            },
+            {
+              "id": "grid",
+              "primitive": "perspective_grid",
+              "scale": 3,
+              "opacity": 0.8,
+              "parallax": {"vertical": 0.5}
+            }
+          ],
+          "fallback_layers": [{"kind": "color", "color": "#0a0a12"}]
+        },
+        "scheme": {
+          "theme": "builtin:neon",
+          "colors": {
+            "foreground": "#e0e0e0",
+            "background": "#0a0a12",
+            "cursor_bg": "#00ff9c",
+            "cursor_fg": "#0a0a12",
+            "selection_bg": "#2a2a40",
+            "selection_fg": "#e0e0e0",
+            "ansi": [
+              "#0a0a12",
+              "#ff4455",
+              "#00cc66",
+              "#ffaa00",
+              "#3366ff",
+              "#cc44ff",
+              "#33aaff",
+              "#e0e0e0"
+            ],
+            "brights": [
+              "#444466",
+              "#ff7788",
+              "#44ee99",
+              "#ffcc55",
+              "#6699ff",
+              "#dd77ff",
+              "#77ccff",
+              "#ffffff"
+            ]
+          }
+        },
+        "palette": {
+          "theme": "builtin:neon",
+          "ui": {
+            "bg": "#0a0a12",
+            "surface": "#14141f",
+            "fg": "#e0e0e0",
+            "fg_dim": "#7a7a8c",
+            "accent": "#00ff9c",
+            "ok": "#00cc66",
+            "warn": "#ffaa00",
+            "bad": "#ff4455",
+            "info": "#33aaff",
+            "tab_bar_bg": "#0a0a12",
+            "tab_active_bg": "#14141f",
+            "tab_active_fg": "#00ff9c",
+            "tab_inactive_bg": "#0a0a12",
+            "tab_inactive_fg": "#7a7a8c"
+          }
+        },
+        "font": {
+          "preferred": ["Terminess Nerd Font"],
+          "fallback": ["JetBrains Mono", "Menlo"],
+          "size": 14,
+          "corrections": {"Terminess Nerd Font": 1.5},
+          "effective": ["Terminess Nerd Font", "JetBrains Mono", "Menlo"],
+          "missing": []
+        },
+        "chrome": {"opacity": 0.9},
+        "status": {"style": "sparkline", "segments": ["load", "memory", "clock"]},
+        "motion": {
+          "scrollback_parallax": false,
+          "alt_wheel_scroll": {"vertical": true, "horizontal": false},
+          "auto_scroll": {"enabled": false, "speed": 0}
+        }
+      }
+    },
+    "machine": {
+      "push_targets": {"nas": {"hosts": ["nas.lan"], "user": "ops"}},
+      "vpn_probes": [{"id": "ts", "kind": "tailscale", "enabled": true}]
+    },
+    "overruled": [],
+    "ignored": [],
+    "notices": [],
+    "error": null
+  }
+}

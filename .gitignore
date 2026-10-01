@@ -5,3 +5,6 @@
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+# Personal snapshots of the original configs; belong in the private layer (wzt-0bj)
+sources/

@@ -1,0 +1,88 @@
+{
+  "_": "'_' and '_<key>' comments at several depths, including inside a layer entry and a keyed map (params), validate.",
+  "name": "validate-theme-comments-valid",
+  "kind": "validation",
+  "schema": "schema/theme.schema.json",
+  "document": {
+    "_": "comment on this object (depth 0)",
+    "schema_version": 1,
+    "id": "builtin:neon",
+    "name": "Neon",
+    "variant": "dark",
+    "_palette": "comment on sibling key 'palette'",
+    "palette": {
+      "_": "comment on this object (depth 1)",
+      "_ui": "comment on sibling key 'ui'",
+      "ui": {
+        "_": "comment on this object (depth 2)",
+        "bg": "#0a0a12",
+        "surface": "#14141f",
+        "fg": "#e0e0e0",
+        "fg_dim": "#7a7a8c",
+        "accent": "#00ff9c",
+        "ok": "#00cc66",
+        "warn": "#ffaa00",
+        "bad": "#ff4455",
+        "info": "#33aaff",
+        "tab_bar_bg": "#0a0a12",
+        "tab_active_bg": "#14141f",
+        "tab_active_fg": "#00ff9c",
+        "tab_inactive_bg": "#0a0a12",
+        "tab_inactive_fg": "#7a7a8c"
+      },
+      "_scheme": "comment on sibling key 'scheme'",
+      "scheme": {
+        "_": "comment on this object (depth 2)",
+        "foreground": "#e0e0e0",
+        "background": "#0a0a12",
+        "cursor_bg": "#00ff9c",
+        "cursor_fg": "#0a0a12",
+        "selection_bg": "#2a2a40",
+        "selection_fg": "#e0e0e0",
+        "ansi": ["#0a0a12", "#ff4455", "#00cc66", "#ffaa00", "#3366ff", "#cc44ff", "#33aaff", "#e0e0e0"],
+        "brights": ["#444466", "#ff7788", "#44ee99", "#ffcc55", "#6699ff", "#dd77ff", "#77ccff", "#ffffff"]
+      }
+    },
+    "_art": "comment on sibling key 'art'",
+    "art": {
+      "_": "comment on this object (depth 1)",
+      "seed": 7,
+      "base_color": "#0a0a12",
+      "layers": [
+        {
+          "_": "comment on this object (depth 3)",
+          "id": "stars",
+          "primitive": "starfield",
+          "scale": 2,
+          "opacity": 0.5,
+          "_parallax": "comment on sibling key 'parallax'",
+          "parallax": {"_": "comment on this object (depth 4)", "vertical": 0.2, "horizontal": 0},
+          "_params": "comment on sibling key 'params'",
+          "params": {"_": "comment on this object (depth 4)", "count": 80}
+        },
+        {
+          "_": "comment on this object (depth 3)",
+          "id": "grid",
+          "primitive": "perspective_grid",
+          "scale": 3,
+          "opacity": 0.8,
+          "_parallax": "comment on sibling key 'parallax'",
+          "parallax": {"_": "comment on this object (depth 4)", "vertical": 0.5}
+        }
+      ]
+    },
+    "fallback_layers": [{"_": "comment on this object (depth 2)", "kind": "color", "color": "#0a0a12"}],
+    "_legibility": "comment on sibling key 'legibility'",
+    "legibility": {"_": "comment on this object (depth 1)", "text": "#e0e0e0", "dim_text": "#7a7a8c"},
+    "_motion": "comment on sibling key 'motion'",
+    "motion": {
+      "_": "comment on this object (depth 1)",
+      "scrollback_parallax": true,
+      "_alt_wheel_scroll": "comment on sibling key 'alt_wheel_scroll'",
+      "alt_wheel_scroll": {"_": "comment on this object (depth 2)", "vertical": true, "horizontal": false},
+      "_auto_scroll": "comment on sibling key 'auto_scroll'",
+      "auto_scroll": {"_": "comment on this object (depth 2)", "enabled": false, "speed": 0}
+    }
+  },
+  "valid": true
+}

@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "wezterminator theme",
+  "description": "A theme holds its palette (semantic UI keys plus a terminal scheme), layer recipe, fallback layers, motion defaults and legibility sample colours. Lives at themes/<slug>/theme.json in each layer. Keys starting with an underscore are comments: '_' describes the enclosing object, '_<key>' describes the sibling '<key>'.",
+  "type": "object",
+  "required": ["schema_version", "id", "name", "variant", "palette", "art", "fallback_layers", "legibility"],
+  "properties": {
+    "schema_version": { "$ref": "preset.schema.json#/$defs/schema_version" },
+    "id": { "$ref": "preset.schema.json#/$defs/theme_id" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "variant": { "enum": ["dark", "light"] },
+    "palette": {
+      "type": "object",
+      "required": ["ui", "scheme"],
+      "properties": {
+        "ui": { "$ref": "#/$defs/ui_palette" },
+        "scheme": { "$ref": "#/$defs/terminal_scheme" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "art": {
+      "description": "Layer recipe. Generation is deterministic from seed. The recipe hash used for stale-art detection is blake3 over this object, comment keys removed, as canonical JSON with sorted keys.",
+      "type": "object",
+      "required": ["seed", "base_color", "layers"],
+      "properties": {
+        "seed": { "type": "integer", "minimum": 0 },
+        "base_color": {
+          "description": "Colour under every layer. Shown alone when backgrounds are paused.",
+          "$ref": "#/$defs/color"
+        },
+        "layers": {
+          "description": "Bottom to top.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/art_layer" }
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "fallback_layers": {
+      "description": "WezTerm Color and Gradient layers used when no art exists at the recorded resolution. Bottom to top.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/fallback_layer" }
+    },
+    "motion": { "$ref": "preset.schema.json#/$defs/motion" },
+    "legibility": {
+      "type": "object",
+      "required": ["text", "dim_text"],
+      "properties": {
+        "text": { "$ref": "#/$defs/color" },
+        "dim_text": { "$ref": "#/$defs/color" },
+        "min_contrast": { "type": "number", "exclusiveMinimum": 1 }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": { "^_": {} },
+  "additionalProperties": false,
+  "$defs": {
+    "color": {
+      "description": "#rrggbb or #rrggbbaa.",
+      "type": "string",
+      "pattern": "^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+    },
+    "color_list_8": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/color" },
+      "minItems": 8,
+      "maxItems": 8
+    },
+    "ui_palette": {
+      "description": "Semantic UI colours. Status segments and the tab bar read these, never raw hex.",
+      "type": "object",
+      "required": [
+        "bg",
+        "surface",
+        "fg",
+        "fg_dim",
+        "accent",
+        "ok",
+        "warn",
+        "bad",
+        "info",
+        "tab_bar_bg",
+        "tab_active_bg",
+        "tab_active_fg",
+        "tab_inactive_bg",
+        "tab_inactive_fg"
+      ],
+      "properties": {
+        "bg": { "$ref": "#/$defs/color" },
+        "surface": { "$ref": "#/$defs/color" },
+        "border": { "$ref": "#/$defs/color" },
+        "fg": { "$ref": "#/$defs/color" },
+        "fg_dim": { "$ref": "#/$defs/color" },
+        "accent": { "$ref": "#/$defs/color" },
+        "accent_alt": { "$ref": "#/$defs/color" },
+        "ok": { "$ref": "#/$defs/color" },
+        "warn": { "$ref": "#/$defs/color" },
+        "bad": { "$ref": "#/$defs/color" },
+        "info": { "$ref": "#/$defs/color" },
+        "tab_bar_bg": { "$ref": "#/$defs/color" },
+        "tab_active_bg": { "$ref": "#/$defs/color" },
+        "tab_active_fg": { "$ref": "#/$defs/color" },
+        "tab_inactive_bg": { "$ref": "#/$defs/color" },
+        "tab_inactive_fg": { "$ref": "#/$defs/color" },
+        "tab_hover_bg": { "$ref": "#/$defs/color" },
+        "tab_hover_fg": { "$ref": "#/$defs/color" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "terminal_scheme": {
+      "type": "object",
+      "required": ["foreground", "background", "cursor_bg", "cursor_fg", "selection_bg", "selection_fg", "ansi", "brights"],
+      "properties": {
+        "foreground": { "$ref": "#/$defs/color" },
+        "background": { "$ref": "#/$defs/color" },
+        "cursor_bg": { "$ref": "#/$defs/color" },
+        "cursor_fg": { "$ref": "#/$defs/color" },
+        "cursor_border": { "$ref": "#/$defs/color" },
+        "selection_bg": { "$ref": "#/$defs/color" },
+        "selection_fg": { "$ref": "#/$defs/color" },
+        "ansi": { "$ref": "#/$defs/color_list_8" },
+        "brights": { "$ref": "#/$defs/color_list_8" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "art_layer": {
+      "description": "One generated layer: a primitive with parameters and an integer scale. Primitive parameters are validated by the art engine (wzt-art), not here.",
+      "type": "object",
+      "required": ["id", "primitive", "scale"],
+      "properties": {
+        "id": { "$ref": "preset.schema.json#/$defs/slug" },
+        "primitive": {
+          "enum": [
+            "starfield",
+            "dither_wash",
+            "cloud_blobs",
+            "perspective_grid",
+            "scanlines",
+            "vignette",
+            "sprite_strip",
+            "scattered_sprites",
+            "isometric_tiles",
+            "silhouette_bands",
+            "image"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^_": {},
+            "^[^_]": true
+          },
+          "additionalProperties": false
+        },
+        "scale": { "type": "integer", "minimum": 1 },
+        "opacity": { "$ref": "preset.schema.json#/$defs/unit_interval" },
+        "parallax": { "$ref": "preset.schema.json#/$defs/parallax" },
+        "repeat": { "enum": ["none", "x", "y", "xy"] },
+        "animated": { "type": "boolean" },
+        "enabled": { "type": "boolean" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "fallback_layer": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "color"],
+          "properties": {
+            "kind": { "const": "color" },
+            "color": { "$ref": "#/$defs/color" },
+            "opacity": { "$ref": "preset.schema.json#/$defs/unit_interval" }
+          },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "shape", "colors"],
+          "properties": {
+            "kind": { "const": "gradient" },
+            "shape": { "enum": ["linear", "radial"] },
+            "angle": { "type": "number", "description": "Degrees, linear gradients only." },
+            "colors": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/color" },
+              "minItems": 2
+            },
+            "opacity": { "$ref": "preset.schema.json#/$defs/unit_interval" }
+          },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

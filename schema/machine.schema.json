@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "wezterminator machine settings",
+  "description": "Per-layer machine settings (machine.json in the fleet and local layers; the built-in layer ships none). Personal values live only here: presets and themes have no field for them, so exporting a preset cannot leak them. No field has a personal default. Keys starting with an underscore are comments: '_' describes the enclosing object, '_<key>' describes the sibling '<key>'.",
+  "type": "object",
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": { "$ref": "preset.schema.json#/$defs/schema_version" },
+    "project_roots": {
+      "description": "Directories scanned by the project-workspace picker. Absolute or starting with ~/.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "issue_url_pattern": {
+      "description": "URL template for quick-select issue keys. {key} is replaced by the matched key. When absent, the key is only copied.",
+      "type": "string",
+      "pattern": "\\{key\\}"
+    },
+    "issue_key_pattern": {
+      "description": "Regular expression that recognises an issue key in terminal text.",
+      "type": "string",
+      "minLength": 1
+    },
+    "vpn_probes": {
+      "description": "Probes the stats collector runs. A probe that is absent or disabled is not run.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/vpn_probe" }
+    },
+    "editor": {
+      "description": "Editor used by 'Edit config'.",
+      "type": "object",
+      "required": ["command"],
+      "properties": {
+        "command": { "type": "string", "minLength": 1 },
+        "args": { "type": "array", "items": { "type": "string" } }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "push_targets": {
+      "description": "Named push targets keyed by slug. Hosts are tried in order (for example a VPN name, then a LAN hostname).",
+      "type": "object",
+      "patternProperties": {
+        "^_": {},
+        "^[a-z0-9]": { "$ref": "#/$defs/push_target" }
+      },
+      "additionalProperties": false
+    },
+    "dev_art_path": {
+      "description": "Development only. Directory holding hand-made art as <dev_art_path>/<theme slug>/<layer id>.png. Consulted before every other art source when set. Never exported, and doctor flags it.",
+      "type": "string",
+      "minLength": 1
+    },
+    "screen_overrides": {
+      "description": "Device-pixel resolutions to use when WezTerm cannot report them or reports logical pixels. An entry with a name applies to the screen of that name; an entry without one applies to every screen.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/screen_override" }
+    }
+  },
+  "patternProperties": { "^_": {} },
+  "additionalProperties": false,
+  "$defs": {
+    "vpn_probe": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "$ref": "preset.schema.json#/$defs/slug" },
+        "kind": { "enum": ["tailscale", "warp", "aws_vpn", "interface", "command"] },
+        "enabled": { "type": "boolean" },
+        "label": { "type": "string", "minLength": 1 },
+        "ttl_seconds": { "type": "integer", "minimum": 1 },
+        "timeout_ms": { "type": "integer", "minimum": 1 },
+        "interface": { "type": "string", "minLength": 1, "description": "Network interface name, for kind 'interface'." },
+        "command": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Argument vector run without a shell, for kind 'command'."
+        },
+        "profile": { "type": "string", "minLength": 1, "description": "AWS VPN profile to watch, for kind 'aws_vpn'." }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "push_target": {
+      "type": "object",
+      "required": ["hosts"],
+      "properties": {
+        "hosts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "user": { "type": "string", "minLength": 1 },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "connect_timeout_seconds": { "type": "integer", "minimum": 1 }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "screen_override": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "_": "Comments at every depth of a preset validate, including inside the font part and its corrections map.",
+  "name": "validate-preset-comments-valid",
+  "kind": "validation",
+  "schema": "schema/preset.schema.json",
+  "document": {
+    "_": "comment on this object (depth 0)",
+    "schema_version": 1,
+    "id": "builtin:neon-night",
+    "name": "Neon Night",
+    "based_on": null,
+    "_parts": "comment on sibling key 'parts'",
+    "parts": {
+      "_": "comment on this object (depth 1)",
+      "_art": "comment on sibling key 'art'",
+      "art": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+      "_scheme": "comment on sibling key 'scheme'",
+      "scheme": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+      "_palette": "comment on sibling key 'palette'",
+      "palette": {"_": "comment on this object (depth 2)", "theme": "builtin:neon"},
+      "_font": "comment on sibling key 'font'",
+      "font": {
+        "_": "comment on this object (depth 2)",
+        "preferred": ["Terminess Nerd Font"],
+        "fallback": ["JetBrains Mono", "Menlo"]
+      },
+      "_chrome": "comment on sibling key 'chrome'",
+      "chrome": {"_": "comment on this object (depth 2)", "opacity": 1},
+      "_status": "comment on sibling key 'status'",
+      "status": {
+        "_": "comment on this object (depth 2)",
+        "style": "sparkline",
+        "segments": ["load", "memory", "clock"]
+      },
+      "_motion": "comment on sibling key 'motion'",
+      "motion": {"_": "comment on this object (depth 2)", "scrollback_parallax": false}
+    }
+  },
+  "valid": true
+}
