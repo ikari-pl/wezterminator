@@ -1,17 +1,17 @@
 //! The `wezterminator` binary.
 //!
-//! Subcommands are stubs until their unit lands (`stats` is real, from U6;
-//! `art generate` and `art check` from U7; `doctor` from U11; `tui` from U12;
-//! `install`/`uninstall` from U15). Each stub accepts and ignores trailing
-//! arguments, so scripts written against the planned interface fail with the
-//! "not implemented" message rather than a usage error.
+//! Subcommands land unit by unit. `stats` (U6), `art generate|check` (U7),
+//! `doctor` (U11), `tui` (U12), `install`/`uninstall` (U15), `fleet`/`push`
+//! (U16) are real. Remaining art subcommands stay stubbed.
 
 use std::path::PathBuf;
 use std::process::ExitCode;
 
 mod art;
 mod doctor;
+mod fleet;
 mod install;
+mod push;
 
 use clap::{Args, Parser, Subcommand};
 use wzt_model::Paths;
@@ -29,7 +29,7 @@ struct Cli {
     command: Command,
 }
 
-/// Arguments the real subcommand will define; accepted and ignored for now.
+/// Trailing-arg sink for subcommands still stubbed (art import/pack).
 #[derive(Debug, Args)]
 pub(crate) struct Pending {
     #[arg(trailing_var_arg = true, allow_hyphen_values = true, hide = true)]
@@ -72,9 +72,9 @@ enum Command {
     /// Undo an install from its manifest.
     Uninstall(install::UninstallArgs),
     /// Attach, pull and promote presets for a private fleet repo.
-    Fleet(Pending),
+    Fleet(fleet::FleetArgs),
     /// Push the fleet layer to another machine over SSH.
-    Push(Pending),
+    Push(push::PushArgs),
 }
 
 impl Command {
@@ -88,8 +88,8 @@ impl Command {
             Command::Doctor(_) => None,
             Command::Install(_) => None,
             Command::Uninstall(_) => None,
-            Command::Fleet(_) => Some(("fleet", "U16")),
-            Command::Push(_) => Some(("push", "U16")),
+            Command::Fleet(_) => None,
+            Command::Push(_) => None,
         }
     }
 }
@@ -219,6 +219,12 @@ fn main() -> ExitCode {
     if let Command::Uninstall(args) = &cli.command {
         return uninstall_command(args);
     }
+    if let Command::Fleet(args) = &cli.command {
+        return fleet_command(args);
+    }
+    if let Command::Push(args) = &cli.command {
+        return push_command(args);
+    }
     if let Some((name, unit)) = cli.command.stub() {
         eprintln!("wezterminator {name}: not implemented yet (planned in {unit})");
     }
@@ -247,6 +253,28 @@ fn uninstall_command(args: &install::UninstallArgs) -> ExitCode {
     install::run_uninstall(&paths, args)
 }
 
+fn fleet_command(args: &fleet::FleetArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator fleet: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    fleet::run(&paths, args)
+}
+
+fn push_command(args: &push::PushArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator push: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    push::run(&paths, args)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -267,7 +295,7 @@ mod tests {
     }
 
     #[test]
-    fn stats_art_doctor_tui_and_install_are_real_and_the_rest_are_still_stubs() {
+    fn stats_art_doctor_tui_install_fleet_and_push_are_real() {
         let stub = |args: &[&str]| Cli::try_parse_from(args).unwrap().command.stub();
         assert_eq!(stub(&["wezterminator", "stats"]), None);
         assert_eq!(stub(&["wezterminator", "art", "generate", "cpc-cool", "--size", "3840x2160"]), None);
@@ -282,6 +310,15 @@ mod tests {
             None
         );
         assert_eq!(stub(&["wezterminator", "uninstall"]), None);
+        assert_eq!(stub(&["wezterminator", "fleet", "pull"]), None);
+        assert_eq!(stub(&["wezterminator", "fleet", "attach", "git@example/fleet.git"]), None);
+        assert_eq!(stub(&["wezterminator", "fleet", "promote", "cool-pills"]), None);
+        assert_eq!(stub(&["wezterminator", "fleet", "push"]), None);
+        assert_eq!(
+            stub(&["wezterminator", "fleet", "export", "cool-pills", "--out", "/tmp/out"]),
+            None
+        );
+        assert_eq!(stub(&["wezterminator", "push", "od-cezar"]), None);
     }
 
     #[test]
@@ -315,11 +352,19 @@ mod tests {
     }
 
     #[test]
-    fn stubs_accept_trailing_arguments() {
-        let cli = Cli::try_parse_from(["wezterminator", "fleet", "pull", "--ff-only"]).unwrap();
-        assert!(
-            matches!(cli.command, Command::Fleet(Pending { ref args }) if args == &["pull", "--ff-only"])
-        );
+    fn fleet_and_push_parse_real_args() {
+        let cli = Cli::try_parse_from(["wezterminator", "fleet", "pull"]).unwrap();
+        assert!(matches!(
+            cli.command,
+            Command::Fleet(fleet::FleetArgs {
+                command: fleet::FleetCommand::Pull
+            })
+        ));
+        let cli = Cli::try_parse_from(["wezterminator", "push", "od-cezar"]).unwrap();
+        match cli.command {
+            Command::Push(args) => assert_eq!(args.target, "od-cezar"),
+            other => panic!("expected Push, got {other:?}"),
+        }
     }
 
     #[test]

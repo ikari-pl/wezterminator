@@ -1,6 +1,6 @@
 [package]
 name = "wzt-ops"
-description = "wezterminator operational tooling: install, undo, migrate, doctor"
+description = "wezterminator operational tooling: install, undo, migrate, doctor, fleet, push"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
