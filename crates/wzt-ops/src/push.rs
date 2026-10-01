@@ -13,6 +13,34 @@ use wzt_model::{Machine, Paths, PushTarget, read_document};
 
 use crate::fleet::{CommandOutput, CommandRunner};
 
+/// Characters and shapes that must never appear in SSH host / user fields.
+/// OpenSSH treats a leading `-` as an option (`-oProxyCommand=…`), which would
+/// turn fleet `machine.json` into remote code execution on the pusher.
+fn validate_ssh_token(kind: &str, value: &str) -> Result<()> {
+    if value.is_empty() {
+        return Err(PushError::msg(format!("push {kind} must not be empty")));
+    }
+    if value.starts_with('-') {
+        return Err(PushError::msg(format!(
+            "push {kind} `{value}` must not start with `-` (would be parsed as an SSH option)"
+        )));
+    }
+    if value.chars().any(|c| c.is_whitespace() || c == '\0' || c == '@') {
+        return Err(PushError::msg(format!(
+            "push {kind} `{value}` must not contain whitespace, NUL, or `@`"
+        )));
+    }
+    Ok(())
+}
+
+fn validate_push_endpoint(host: &str, user: Option<&str>) -> Result<()> {
+    validate_ssh_token("host", host)?;
+    if let Some(u) = user {
+        validate_ssh_token("user", u)?;
+    }
+    Ok(())
+}
+
 #[derive(Debug, Error)]
 pub enum PushError {
     #[error("{0}")]
@@ -117,6 +145,14 @@ pub fn push_with_target(
     let mut chosen: Option<String> = None;
 
     for host in &target.hosts {
+        if let Err(e) = validate_push_endpoint(host, user) {
+            attempts.push(HostAttempt {
+                host: host.clone(),
+                reachable: false,
+                detail: e.to_string(),
+            });
+            continue;
+        }
         let (reachable, detail) = probe_host(runner, host, user, port, timeout);
         attempts.push(HostAttempt {
             host: host.clone(),
@@ -172,23 +208,26 @@ pub fn push_with_target(
 }
 
 fn ssh_base_args(host: &str, user: Option<&str>, port: Option<u16>, timeout: u64) -> Vec<String> {
+    // Fail closed on unknown host keys: private fleet sync must not TOFU.
     let mut args = vec![
         "-o".into(),
         format!("ConnectTimeout={timeout}"),
         "-o".into(),
         "BatchMode=yes".into(),
         "-o".into(),
-        "StrictHostKeyChecking=accept-new".into(),
+        "StrictHostKeyChecking=yes".into(),
     ];
     if let Some(p) = port {
         args.push("-p".into());
         args.push(p.to_string());
     }
-    let dest = match user {
-        Some(u) => format!("{u}@{host}"),
-        None => host.to_string(),
-    };
-    args.push(dest);
+    // Separate `-l` keeps the user out of the destination token.
+    if let Some(u) = user {
+        args.push("-l".into());
+        args.push(u.to_string());
+    }
+    args.push("--".into());
+    args.push(host.to_string());
     args
 }
 
@@ -231,11 +270,10 @@ fn rsync_fleet(
     port: Option<u16>,
     timeout: u64,
 ) -> Result<()> {
-    let dest_userhost = match user {
-        Some(u) => format!("{u}@{host}"),
-        None => host.to_string(),
-    };
-    let remote = format!("{dest_userhost}:{REMOTE_FLEET_REL}/");
+    validate_push_endpoint(host, user)?;
+
+    // rsync destination is host:path (user via ssh -l in -e), never raw argv options.
+    let remote = format!("{host}:{REMOTE_FLEET_REL}/");
 
     // Ensure trailing slash so rsync syncs contents into the remote fleet dir.
     let mut src = fleet.as_os_str().to_string_lossy().into_owned();
@@ -243,9 +281,15 @@ fn rsync_fleet(
         src.push('/');
     }
 
-    let mut ssh_cmd = format!("ssh -o ConnectTimeout={timeout} -o BatchMode=yes");
+    let mut ssh_cmd = format!(
+        "ssh -o ConnectTimeout={timeout} -o BatchMode=yes -o StrictHostKeyChecking=yes"
+    );
     if let Some(p) = port {
         ssh_cmd.push_str(&format!(" -p {p}"));
+    }
+    if let Some(u) = user {
+        // User already validated; still quote-safe because tokens forbid whitespace.
+        ssh_cmd.push_str(&format!(" -l {u}"));
     }
 
     let args = [

@@ -236,3 +236,62 @@ fn resolve_push_target_reads_local_machine_settings() {
     assert_eq!(t.user.as_deref(), Some("ikari"));
     assert_eq!(t.connect_timeout_seconds, Some(3));
 }
+
+#[test]
+fn dashed_host_is_rejected_before_ssh_runs() {
+    let (_tmp, paths, _fleet) = harness();
+    let target = PushTarget {
+        hosts: vec!["-oProxyCommand=evil".into(), "safe.example".into()],
+        user: None,
+        port: None,
+        connect_timeout_seconds: Some(1),
+        comments: Default::default(),
+    };
+    let runner = FakeRunner::new(vec![
+        Scripted {
+            when: when_ssh_host("safe.example"),
+            output: ok(""),
+        },
+        Scripted {
+            when: when_rsync(),
+            output: ok(""),
+        },
+        Scripted {
+            when: when_ssh_cmd("safe.example", "command -v wezterminator"),
+            output: fail(1, ""),
+        },
+    ]);
+    let report = push_with_target(&paths, "t", &target, &runner).unwrap();
+    assert_eq!(report.host, "safe.example");
+    assert!(!report.attempts[0].reachable);
+    assert!(report.attempts[0].detail.contains("SSH option"));
+    let log = runner.log();
+    assert!(
+        !log.iter().any(|l| l.contains("ProxyCommand")),
+        "must never pass dashed host to ssh: {log:?}"
+    );
+    assert!(
+        log.iter().any(|l| l.contains("StrictHostKeyChecking=yes")),
+        "expected fail-closed host key checking: {log:?}"
+    );
+}
+
+#[test]
+fn dashed_user_is_rejected() {
+    let (_tmp, paths, _fleet) = harness();
+    let target = PushTarget {
+        hosts: vec!["only.example".into()],
+        user: Some("-oProxyCommand=evil".into()),
+        port: None,
+        connect_timeout_seconds: Some(1),
+        comments: Default::default(),
+    };
+    let runner = FakeRunner::new(vec![]);
+    let err = push_with_target(&paths, "t", &target, &runner).unwrap_err();
+    // Validation runs before probe; with only one invalid user, no host is chosen.
+    assert!(
+        err.to_string().contains("no reachable host") || err.to_string().contains("SSH option"),
+        "{err}"
+    );
+    assert!(runner.log().is_empty(), "ssh must not run for invalid user");
+}

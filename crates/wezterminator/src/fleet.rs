@@ -106,8 +106,14 @@ pub fn run(paths: &Paths, args: &FleetArgs) -> ExitCode {
             out,
             checkout,
         } => {
-            let hostname = hostname_string();
-            let denylist = Denylist::from_hostname(hostname);
+            let hostname = hostname_string().unwrap_or_default();
+            let denylist = match Denylist::from_hostname(&hostname) {
+                Ok(d) => d,
+                Err(e) => {
+                    eprintln!("wezterminator fleet export: {e}");
+                    return ExitCode::FAILURE;
+                }
+            };
             let checkout = checkout.clone().or_else(default_checkout);
             match export_bundle(paths, preset, out, &denylist, checkout.as_deref()) {
                 Ok(report) => {
@@ -126,18 +132,18 @@ pub fn run(paths: &Paths, args: &FleetArgs) -> ExitCode {
     }
 }
 
-fn hostname_string() -> String {
+fn hostname_string() -> Option<String> {
     std::process::Command::new("hostname")
         .output()
         .ok()
         .and_then(|o| {
             if o.status.success() {
-                Some(String::from_utf8_lossy(&o.stdout).trim().to_string())
+                let s = String::from_utf8_lossy(&o.stdout).trim().to_string();
+                if s.is_empty() { None } else { Some(s) }
             } else {
                 None
             }
         })
-        .unwrap_or_default()
 }
 
 fn default_checkout() -> Option<PathBuf> {

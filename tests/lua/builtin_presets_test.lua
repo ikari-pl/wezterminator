@@ -143,7 +143,7 @@ T.test('AE6: missing preferred font resolves to declared fallback list', functio
   T.ok(font.fallback and #font.fallback >= 1)
 end)
 
-T.test('Soft Nebula keeps OD-Cezar chrome and pill status', function()
+T.test('Soft Nebula keeps translucent chrome and pill status', function()
   local presets, themes = load_builtins()
   local out = resolve_id(presets, themes, 'builtin:soft-nebula')
   local chrome = out.resolved.parts.chrome

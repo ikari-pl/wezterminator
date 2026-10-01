@@ -12,8 +12,8 @@ use std::process::Command;
 use std::time::SystemTime;
 
 use thiserror::Error;
-use wzt_model::paths::PRESETS_DIR;
-use wzt_model::{Paths, Preset, read_document, write_document};
+use wzt_model::paths::{PRESETS_DIR, THEME_FILE, THEMES_DIR};
+use wzt_model::{Paths, Preset, Theme, read_document, write_document};
 
 /// How an external program ended when started through a [`CommandRunner`].
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -277,6 +277,10 @@ pub struct PromoteReport {
 }
 
 /// Copy a local preset into the fleet clone (does not delete local) and commit.
+///
+/// When the preset references `local:…` themes, those theme directories are
+/// copied into the fleet layer and the preset's theme ids are rewritten to
+/// `fleet:…`. References to missing local themes refuse the promote.
 pub fn promote(
     paths: &Paths,
     preset_ref: &str,
@@ -301,20 +305,20 @@ pub fn promote(
     let fleet_id = format!("fleet:{slug}");
     preset.id = fleet_id.clone();
 
+    let mut git_paths = Vec::new();
+    promote_local_themes(paths, &fleet, &mut preset, &mut git_paths)?;
+
     let fleet_presets = fleet.join(PRESETS_DIR);
     fs::create_dir_all(&fleet_presets).map_err(|e| FleetError::io(&fleet_presets, e))?;
     let fleet_path = fleet_presets.join(format!("{slug}.json"));
     write_document(&fleet_path, &preset)?;
+    git_paths.push(format!("{PRESETS_DIR}/{slug}.json"));
 
-    let rel = format!("{PRESETS_DIR}/{slug}.json");
-    git_ok(runner, Some(&fleet), &["add", "--", &rel])?;
+    for rel in &git_paths {
+        git_ok(runner, Some(&fleet), &["add", "--", rel])?;
+    }
     let msg = format!("promote {fleet_id}");
-    // Allow empty identity in tests via env; production uses the user's git config.
-    git_ok(
-        runner,
-        Some(&fleet),
-        &["commit", "-m", &msg],
-    )?;
+    git_ok(runner, Some(&fleet), &["commit", "-m", &msg])?;
     let head = git_ok(runner, Some(&fleet), &["rev-parse", "--short", "HEAD"])?;
 
     Ok(PromoteReport {
@@ -323,6 +327,102 @@ pub fn promote(
         fleet_id,
         commit: head.stdout.trim().to_string(),
     })
+}
+
+fn promote_local_themes(
+    paths: &Paths,
+    fleet: &Path,
+    preset: &mut Preset,
+    git_paths: &mut Vec<String>,
+) -> Result<()> {
+    let refs = collect_theme_refs(preset);
+    for theme_ref in refs {
+        let Some(local_slug) = theme_ref.strip_prefix("local:") else {
+            continue;
+        };
+        let src = paths
+            .local_layer_dir()
+            .join(THEMES_DIR)
+            .join(local_slug)
+            .join(THEME_FILE);
+        if !src.is_file() {
+            return Err(FleetError::msg(format!(
+                "preset references local theme `{theme_ref}` but {} is missing; \
+                 create the theme or point the preset at a fleet/builtin theme before promoting",
+                src.display()
+            )));
+        }
+        let mut theme: Theme = read_document(&src)?;
+        let fleet_theme_id = format!("fleet:{local_slug}");
+        theme.id = fleet_theme_id.clone();
+
+        let dest_dir = fleet.join(THEMES_DIR).join(local_slug);
+        fs::create_dir_all(&dest_dir).map_err(|e| FleetError::io(&dest_dir, e))?;
+        let dest = dest_dir.join(THEME_FILE);
+        write_document(&dest, &theme)?;
+        git_paths.push(format!("{THEMES_DIR}/{local_slug}/{THEME_FILE}"));
+        rewrite_theme_refs(preset, &theme_ref, &fleet_theme_id);
+    }
+    Ok(())
+}
+
+fn collect_theme_refs(preset: &Preset) -> Vec<String> {
+    let mut out = Vec::new();
+    if let Ok(v) = serde_json::to_value(&preset.parts) {
+        collect_theme_strings(&v, &mut out);
+    }
+    out.sort();
+    out.dedup();
+    out
+}
+
+fn collect_theme_strings(v: &serde_json::Value, out: &mut Vec<String>) {
+    match v {
+        serde_json::Value::Object(map) => {
+            if let Some(serde_json::Value::String(s)) = map.get("theme") {
+                out.push(s.clone());
+            }
+            for val in map.values() {
+                collect_theme_strings(val, out);
+            }
+        }
+        serde_json::Value::Array(arr) => {
+            for val in arr {
+                collect_theme_strings(val, out);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn rewrite_theme_refs(preset: &mut Preset, from: &str, to: &str) {
+    if let Ok(mut v) = serde_json::to_value(&preset.parts) {
+        rewrite_theme_string_value(&mut v, from, to);
+        if let Ok(parts) = serde_json::from_value(v) {
+            preset.parts = parts;
+        }
+    }
+}
+
+fn rewrite_theme_string_value(v: &mut serde_json::Value, from: &str, to: &str) {
+    match v {
+        serde_json::Value::Object(map) => {
+            if let Some(serde_json::Value::String(s)) = map.get_mut("theme")
+                && s == from
+            {
+                *s = to.to_string();
+            }
+            for val in map.values_mut() {
+                rewrite_theme_string_value(val, from, to);
+            }
+        }
+        serde_json::Value::Array(arr) => {
+            for val in arr {
+                rewrite_theme_string_value(val, from, to);
+            }
+        }
+        _ => {}
+    }
 }
 
 /// Strip a `local:` / `fleet:` / `builtin:` prefix when present.

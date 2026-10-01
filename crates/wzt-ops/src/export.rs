@@ -55,17 +55,21 @@ pub struct Denylist {
 }
 
 impl Denylist {
-    /// Build a denylist from an injectable hostname (tests pass a fixed value).
-    pub fn from_hostname(hostname: impl Into<String>) -> Self {
+    /// Build a denylist from a known hostname. Empty hostname is rejected so
+    /// export cannot silently skip hostname scanning.
+    pub fn from_hostname(hostname: impl Into<String>) -> Result<Self> {
         let host = hostname.into();
-        let mut hostnames = Vec::new();
-        if !host.is_empty() {
-            hostnames.push(host);
+        let host = host.trim();
+        if host.is_empty() {
+            return Err(ExportError::msg(
+                "cannot export: machine hostname is unknown; \
+                 refusing so personal hostnames in comments cannot slip through",
+            ));
         }
-        Self {
-            hostnames,
+        Ok(Self {
+            hostnames: vec![host.to_string()],
             reject_emails: true,
-        }
+        })
     }
 }
 
@@ -397,10 +401,16 @@ mod tests {
             "_": "built on metis overnight",
             "parts": {}
         });
-        let denylist = Denylist::from_hostname("metis");
+        let denylist = Denylist::from_hostname("metis").unwrap();
         let hits = scan_value(&v, "$", &denylist);
         assert_eq!(hits.len(), 1);
         assert!(hits[0].reason.contains("hostname"));
+    }
+
+    #[test]
+    fn from_hostname_refuses_empty() {
+        let err = Denylist::from_hostname("").unwrap_err();
+        assert!(err.to_string().contains("hostname is unknown"));
     }
 
     #[test]

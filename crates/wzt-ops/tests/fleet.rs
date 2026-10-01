@@ -168,6 +168,110 @@ fn ae2_promote_on_a_push_bare_pull_on_b_local_remains() {
 }
 
 #[test]
+fn dirty_pull_refuses_and_leaves_trees_untouched() {
+    let env = GitEnv::new();
+    let runner = SystemRunner;
+    attach(&env.paths_a, &env.bare_url(), &runner).unwrap();
+    configure_identity(&env.paths_a.fleet_layer_dir());
+
+    let dirty = env.paths_a.fleet_layer_dir().join("dirty.txt");
+    fs::write(&dirty, "uncommitted\n").unwrap();
+
+    let err = pull(&env.paths_a, &runner).unwrap_err();
+    assert!(
+        err.to_string().contains("dirty"),
+        "expected dirty refusal, got {err}"
+    );
+    assert_eq!(fs::read_to_string(&dirty).unwrap(), "uncommitted\n");
+}
+
+#[test]
+fn promote_copies_local_theme_and_rewrites_refs() {
+    let env = GitEnv::new();
+    let runner = SystemRunner;
+    attach(&env.paths_a, &env.bare_url(), &runner).unwrap();
+    configure_identity(&env.paths_a.fleet_layer_dir());
+
+    let theme_dir = env
+        .paths_a
+        .local_layer_dir()
+        .join("themes")
+        .join("my-look");
+    fs::create_dir_all(&theme_dir).unwrap();
+    let theme = serde_json::json!({
+        "schema_version": 1,
+        "id": "local:my-look",
+        "name": "My Look",
+        "variant": "dark",
+        "palette": {
+            "ui": {
+                "bg": "#000000", "surface": "#111111", "fg": "#ffffff", "fg_dim": "#888888",
+                "accent": "#ffffff", "accent_alt": "#cccccc", "ok": "#00ff00", "warn": "#ffff00",
+                "bad": "#ff0000", "info": "#00ffff",
+                "tab_bar_bg": "#000000", "tab_active_bg": "#111111", "tab_active_fg": "#ffffff",
+                "tab_inactive_bg": "#000000", "tab_inactive_fg": "#888888",
+                "tab_hover_bg": "#111111", "tab_hover_fg": "#ffffff"
+            },
+            "scheme": {
+                "foreground": "#ffffff", "background": "#000000",
+                "cursor_bg": "#ffffff", "cursor_fg": "#000000",
+                "selection_bg": "#333333", "selection_fg": "#ffffff",
+                "ansi": ["#000000","#ff0000","#00ff00","#ffff00","#0000ff","#ff00ff","#00ffff","#ffffff"],
+                "brights": ["#888888","#ff0000","#00ff00","#ffff00","#0000ff","#ff00ff","#00ffff","#ffffff"]
+            }
+        },
+        "art": { "seed": 1, "base_color": "#000000", "layers": [] },
+        "fallback_layers": [{ "kind": "color", "color": "#000000" }],
+        "motion": {
+            "scrollback_parallax": false,
+            "alt_wheel_scroll": { "vertical": false, "horizontal": false },
+            "auto_scroll": { "enabled": false, "speed": 0 }
+        },
+        "legibility": { "text": "#ffffff", "dim_text": "#888888", "min_contrast": 3.0 }
+    });
+    write_document(&theme_dir.join("theme.json"), &theme).unwrap();
+
+    let dir = env.paths_a.local_layer_dir().join("presets");
+    fs::create_dir_all(&dir).unwrap();
+    let preset = serde_json::json!({
+        "schema_version": 1,
+        "id": "local:custom",
+        "name": "Custom",
+        "based_on": null,
+        "parts": {
+            "art": { "theme": "local:my-look" },
+            "scheme": { "theme": "local:my-look" },
+            "palette": { "theme": "local:my-look" },
+            "font": { "preferred": ["Menlo"], "fallback": ["Menlo"], "size": 14.0 },
+            "chrome": { "opacity": 1.0 },
+            "status": { "style": "sparkline", "segments": ["clock"] },
+            "motion": {
+                "scrollback_parallax": false,
+                "alt_wheel_scroll": { "vertical": false, "horizontal": false },
+                "auto_scroll": { "enabled": false, "speed": 0 }
+            }
+        }
+    });
+    write_document(&dir.join("custom.json"), &preset).unwrap();
+
+    let report = promote(&env.paths_a, "custom", &runner).unwrap();
+    let fleet_preset: Preset = read_document(&report.fleet_path).unwrap();
+    assert_eq!(
+        fleet_preset.parts.art.theme.as_deref(),
+        Some("fleet:my-look")
+    );
+    let fleet_theme = env
+        .paths_a
+        .fleet_layer_dir()
+        .join("themes")
+        .join("my-look")
+        .join("theme.json");
+    assert!(fleet_theme.is_file());
+    let theme_doc: serde_json::Value = read_document(&fleet_theme).unwrap();
+    assert_eq!(theme_doc["id"], "fleet:my-look");
+}
+
+#[test]
 fn diverged_pull_refuses_and_leaves_trees_untouched() {
     let env = GitEnv::new();
     let runner = SystemRunner;
@@ -266,7 +370,7 @@ fn export_strips_hostname_from_machine_settings() {
     let out = tmp.path().join("bundle");
     // Denylist uses a different hostname so the preset itself is allowed;
     // the assertion is that machine.json content is absent from the bundle.
-    let denylist = Denylist::from_hostname("not-this-host");
+    let denylist = Denylist::from_hostname("not-this-host").unwrap();
     let report = export_bundle(&paths, "cool-pills", &out, &denylist, None).unwrap();
     assert!(report.preset_path.is_file());
     assert!(!out.join("machine.json").exists());
@@ -287,7 +391,7 @@ fn export_strips_hostname_from_machine_settings() {
         &leaked,
     )
     .unwrap();
-    let denylist = Denylist::from_hostname("metis");
+    let denylist = Denylist::from_hostname("metis").unwrap();
     let err = export_bundle(&paths, "cool-pills", &out.join("bad"), &denylist, None).unwrap_err();
     assert!(err.to_string().contains("personal data") || err.to_string().contains("hostname"));
 }
