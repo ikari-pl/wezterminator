@@ -243,13 +243,22 @@ function M.new(opts)
   end
 
   --- Fire an event at every handler registered in the CURRENT Lua state.
+  local function snapshot(list)
+    local out = {}
+    for i = 1, #list do
+      out[i] = list[i]
+    end
+    return out
+  end
+
   function stub.emit(event, ...)
     local list = stub.handlers[event]
     if not list then
       return
     end
-    local snapshot = { table.unpack and table.unpack(list) or unpack(list) }
-    for _, fn in ipairs(snapshot) do
+    -- A handler may trigger a re-evaluation that replaces stub.handlers, so
+    -- iterate a copy.
+    for _, fn in ipairs(snapshot(list)) do
       fn(...)
     end
   end
@@ -260,7 +269,7 @@ function M.new(opts)
       stub.emit('window-config-reloaded', window, nil)
       return
     end
-    for _, w in ipairs({ table.unpack and table.unpack(stub.windows) or unpack(stub.windows) }) do
+    for _, w in ipairs(snapshot(stub.windows)) do
       if not w.closed then
         stub.emit('window-config-reloaded', w, nil)
       end

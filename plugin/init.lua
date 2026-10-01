@@ -124,6 +124,11 @@ local MODES = {
 ---   dirs           { ['local'] =, fleet =, state =, data = } overriding platform.dirs()
 ---   installed_fonts  list of installed family names; default unknown (nil)
 ---   default_preset id used when the active preset is missing
+---   features       false, or { keys = false, status = false, parallax = false,
+---                  palette = false } to skip a part of the ported metis features
+---   binary         the wezterminator executable the status bar starts for stats
+---   collect        false to never start the stats collector
+---   fonts          extra family names for the font picker
 ---
 --- Returns a summary table (also kept in M.last) for tests and diagnostics.
 function M.apply_to_config(config, opts)
@@ -236,6 +241,7 @@ function M.apply_to_config(config, opts)
     local fragment, _, bg = build(previewed.resolved, previewed.machine)
     return { config = fragment, background = bg }
   end
+  summary.preview_payload = M.preview_payload
 
   if result.resolved then
     local fragment, unavailable, bg = build(result.resolved, result.machine)
@@ -364,6 +370,23 @@ function M.apply_to_config(config, opts)
       end)
     end
   end
+
+  -- The ported metis features: status, parallax, projects, quick-select,
+  -- menus, pickers, key bindings and the palette. See wzt/features.lua.
+  summary.features = require('wzt.features').install(config, {
+    mode = mode,
+    owned_set = owned_set,
+    resolved = result.resolved,
+    machine = result.machine,
+    dirs = dirs,
+    host = host,
+    catalog = result.catalog,
+    engine_actions = M.actions,
+    features = opts.features,
+    binary = opts.binary,
+    collect = opts.collect,
+    fonts = opts.fonts,
+  })
 
   M.last = summary
   return summary

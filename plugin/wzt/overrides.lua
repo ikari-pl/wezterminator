@@ -212,6 +212,31 @@ function M.set_channel(window, name, data, meta)
   return M.apply(window)
 end
 
+--- Set several channels and apply ONCE. `updates` maps channel name to its
+--- payload; a payload of `false` removes the channel. For a caller that moves
+--- two channels in one tick (the wheel position and auto-scroll) and must cost
+--- one set_config_overrides, not two. Returns true when overrides were written.
+function M.set_channels(window, updates, meta)
+  local key = window_key(window)
+  local ws = load_windows()
+  local rec = record(ws, key)
+  for name, data in pairs(updates) do
+    if data == false then
+      rec.channels[name] = nil
+    else
+      local ch = { data = platform.plain(data) or {} }
+      for _, f in ipairs({ 'owner', 'seq', 'expires_at' }) do
+        if meta and meta[f] ~= nil then
+          ch[f] = meta[f]
+        end
+      end
+      rec.channels[name] = ch
+    end
+  end
+  save_windows(ws)
+  return M.apply(window)
+end
+
 function M.get_channel(window, name)
   local rec = load_windows()[window_key(window)]
   return rec and rec.channels and rec.channels[name] or nil

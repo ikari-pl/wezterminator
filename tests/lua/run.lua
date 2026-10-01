@@ -229,24 +229,43 @@ end
 
 local filter = arg and arg[1]
 local files = T.glob(here .. '/*_test.lua')
+
+-- A default `wezterm` module, so a test file (or a module it requires) can
+-- `require 'wezterm'` while the file is being LOADED. Tests that need their own
+-- configured stub create one with T.stub.new(), which replaces this.
+stub_lib.new()
+
+-- A file that cannot be loaded is a failing test, not a reason to stop: one
+-- half-written file must not hide the results of every other file.
+local function load_failure(name, message)
+  tests[#tests + 1] = {
+    file = name,
+    name = 'load ' .. name,
+    fn = function()
+      T.fail(message)
+    end,
+  }
+end
+
 for _, path in ipairs(files) do
   local name = path:match('([^/]+)$')
   if not filter or name:find(filter, 1, true) then
     current_file = name
     local chunk, err = loadfile(path)
     if not chunk then
-      io.stderr:write('cannot load ' .. path .. ': ' .. tostring(err) .. '\n')
-      os.exit(2)
-    end
-    -- Test files either take T as the chunk argument (`function(T) ... end`
-    -- as the whole file body via `local T = ...`) or `return function(T)`.
-    local ok, ret = pcall(chunk, T)
-    if not ok then
-      io.stderr:write('error loading ' .. path .. ': ' .. tostring(ret) .. '\n')
-      os.exit(2)
-    end
-    if type(ret) == 'function' then
-      ret(T)
+      load_failure(name, 'cannot load: ' .. tostring(err))
+    else
+      -- Test files either take T as the chunk argument (`local T = ...`) or
+      -- `return function(T)`.
+      local ok, ret = pcall(chunk, T)
+      if not ok then
+        load_failure(name, 'error while loading: ' .. tostring(ret))
+      elseif type(ret) == 'function' then
+        local ok2, err2 = pcall(ret, T)
+        if not ok2 then
+          load_failure(name, 'error while registering tests: ' .. tostring(err2))
+        end
+      end
     end
   end
 end
