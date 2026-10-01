@@ -1,0 +1,132 @@
+{
+  "_": "Origin look from OD-Cezar. Soft Nebula chrome: opacity 0.94, blur 22, pill status.",
+  "schema_version": 1,
+  "id": "builtin:soft-nebula",
+  "name": "Soft Nebula",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#070914",
+      "surface": "#1e1e2e",
+      "fg": "#cdd6f4",
+      "fg_dim": "#6c7086",
+      "accent": "#89b4fa",
+      "accent_alt": "#cba6f7",
+      "ok": "#a6e3a1",
+      "warn": "#f9e2af",
+      "bad": "#f38ba8",
+      "info": "#89dceb",
+      "tab_bar_bg": "#070914",
+      "tab_active_bg": "#1e1e2e",
+      "tab_active_fg": "#cdd6f4",
+      "tab_inactive_bg": "#070914",
+      "tab_inactive_fg": "#6c7086",
+      "tab_hover_bg": "#313244",
+      "tab_hover_fg": "#cdd6f4"
+    },
+    "scheme": {
+      "_": "Catppuccin Mocha-aligned terminal scheme; background forced to Soft Nebula base.",
+      "foreground": "#cdd6f4",
+      "background": "#070914",
+      "cursor_bg": "#f5e0dc",
+      "cursor_fg": "#070914",
+      "selection_bg": "#45475a",
+      "selection_fg": "#cdd6f4",
+      "ansi": [
+        "#45475a",
+        "#f38ba8",
+        "#a6e3a1",
+        "#f9e2af",
+        "#89b4fa",
+        "#f5c2e7",
+        "#94e2d5",
+        "#bac2de"
+      ],
+      "brights": [
+        "#585b70",
+        "#f38ba8",
+        "#a6e3a1",
+        "#f9e2af",
+        "#89b4fa",
+        "#f5c2e7",
+        "#94e2d5",
+        "#a6adc8"
+      ]
+    }
+  },
+  "art": {
+    "seed": 2024,
+    "base_color": "#070914",
+    "layers": [
+      {
+        "id": "nebula",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.22,
+        "parallax": {
+          "vertical": 0.05,
+          "horizontal": 0
+        },
+        "params": {
+          "blob_count": 8
+        }
+      },
+      {
+        "id": "stars",
+        "primitive": "starfield",
+        "scale": 2,
+        "opacity": 0.4,
+        "parallax": {
+          "vertical": 0.12,
+          "horizontal": 0
+        },
+        "params": {
+          "count": 100
+        }
+      },
+      {
+        "id": "haze",
+        "primitive": "vignette",
+        "scale": 4,
+        "opacity": 0.25,
+        "parallax": {
+          "vertical": 0,
+          "horizontal": 0
+        },
+        "params": {}
+      }
+    ]
+  },
+  "fallback_layers": [
+    {
+      "kind": "color",
+      "color": "#070914"
+    },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": [
+        "#070914",
+        "#1e1e2e"
+      ],
+      "opacity": 0.5
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": {
+      "vertical": true,
+      "horizontal": false
+    },
+    "auto_scroll": {
+      "enabled": false,
+      "speed": 0
+    }
+  },
+  "legibility": {
+    "text": "#cdd6f4",
+    "dim_text": "#6c7086",
+    "min_contrast": 3.0
+  }
+}

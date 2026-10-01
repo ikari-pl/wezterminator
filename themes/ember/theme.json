@@ -1,0 +1,143 @@
+{
+  "_": "Origin look from metis warm theme. GruvboxDarkHard text colours over a low-luminance warm base.",
+  "schema_version": 1,
+  "id": "builtin:ember",
+  "name": "Ember",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#0c0706",
+      "surface": "#3c3836",
+      "fg": "#fabd2f",
+      "fg_dim": "#928374",
+      "accent": "#fabd2f",
+      "accent_alt": "#fe8019",
+      "ok": "#b8bb26",
+      "warn": "#fabd2f",
+      "bad": "#fb4934",
+      "info": "#83a598",
+      "tab_bar_bg": "#0c0706",
+      "tab_active_bg": "#3c3836",
+      "tab_active_fg": "#fabd2f",
+      "tab_inactive_bg": "#0c0706",
+      "tab_inactive_fg": "#928374",
+      "tab_hover_bg": "#3c3836",
+      "tab_hover_fg": "#fabd2f"
+    },
+    "scheme": {
+      "_": "Gruvbox-like ANSI tuned to Ember base; scheme background matches art base.",
+      "foreground": "#ebdbb2",
+      "background": "#0c0706",
+      "cursor_bg": "#fabd2f",
+      "cursor_fg": "#0c0706",
+      "selection_bg": "#3c3836",
+      "selection_fg": "#ebdbb2",
+      "ansi": [
+        "#0c0706",
+        "#cc241d",
+        "#98971a",
+        "#d79921",
+        "#458588",
+        "#b16286",
+        "#689d6a",
+        "#a89984"
+      ],
+      "brights": [
+        "#928374",
+        "#fb4934",
+        "#b8bb26",
+        "#fabd2f",
+        "#83a598",
+        "#d3869b",
+        "#8ec07c",
+        "#ebdbb2"
+      ]
+    }
+  },
+  "art": {
+    "seed": 2017,
+    "base_color": "#0c0706",
+    "layers": [
+      {
+        "id": "nebula",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.12,
+        "parallax": {
+          "vertical": 0.04,
+          "horizontal": 0
+        },
+        "params": {
+          "blob_count": 5
+        }
+      },
+      {
+        "id": "stars",
+        "primitive": "starfield",
+        "scale": 2,
+        "opacity": 0.45,
+        "parallax": {
+          "vertical": 0.1,
+          "horizontal": 0
+        },
+        "params": {
+          "count": 90
+        }
+      },
+      {
+        "id": "grid",
+        "primitive": "perspective_grid",
+        "scale": 3,
+        "opacity": 0.28,
+        "parallax": {
+          "vertical": 0.52,
+          "horizontal": 0
+        },
+        "params": {}
+      },
+      {
+        "id": "haze",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.2,
+        "parallax": {
+          "vertical": 0.02,
+          "horizontal": 0
+        },
+        "params": {}
+      }
+    ]
+  },
+  "fallback_layers": [
+    {
+      "kind": "color",
+      "color": "#0c0706"
+    },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": [
+        "#0c0706",
+        "#3c1810"
+      ],
+      "opacity": 0.35
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": {
+      "vertical": true,
+      "horizontal": false
+    },
+    "auto_scroll": {
+      "enabled": false,
+      "speed": 0
+    }
+  },
+  "legibility": {
+    "text": "#ebdbb2",
+    "dim_text": "#928374",
+    "min_contrast": 3.0
+  }
+}

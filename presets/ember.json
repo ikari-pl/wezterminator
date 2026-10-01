@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "builtin:ember",
+  "name": "Ember",
+  "based_on": null,
+  "parts": {
+    "art": {
+      "theme": "builtin:ember"
+    },
+    "scheme": {
+      "wezterm_scheme": "GruvboxDarkHard"
+    },
+    "palette": {
+      "theme": "builtin:ember"
+    },
+    "font": {
+      "preferred": [
+        "Terminess Nerd Font Mono",
+        "BlexMono Nerd Font Mono"
+      ],
+      "fallback": [
+        "FiraCode Nerd Font Mono",
+        "JetBrains Mono",
+        "Menlo"
+      ],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 1.0,
+      "padding": {
+        "left": 4,
+        "right": 4,
+        "top": 2,
+        "bottom": 2
+      }
+    },
+    "status": {
+      "style": "sparkline",
+      "segments": [
+        "load",
+        "memory",
+        "pressure",
+        "battery",
+        "cwd",
+        "clock"
+      ]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": {
+        "vertical": true,
+        "horizontal": false
+      },
+      "auto_scroll": {
+        "enabled": false,
+        "speed": 0
+      }
+    }
+  }
+}

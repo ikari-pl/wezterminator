@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "builtin:soft-nebula",
+  "name": "Soft Nebula",
+  "based_on": null,
+  "parts": {
+    "art": {
+      "theme": "builtin:soft-nebula"
+    },
+    "scheme": {
+      "theme": "builtin:soft-nebula"
+    },
+    "palette": {
+      "theme": "builtin:soft-nebula"
+    },
+    "font": {
+      "preferred": [
+        "FiraCode Nerd Font",
+        "GeistMono Nerd Font"
+      ],
+      "fallback": [
+        "FiraCode Nerd Font Mono",
+        "JetBrains Mono",
+        "Menlo"
+      ],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 0.94,
+      "blur": 22,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 6,
+        "bottom": 6
+      },
+      "inactive_pane": {
+        "saturation": 0.9,
+        "brightness": 0.7
+      }
+    },
+    "status": {
+      "style": "pill",
+      "segments": [
+        "cwd",
+        "battery",
+        "clock",
+        "workspace"
+      ]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": {
+        "vertical": true,
+        "horizontal": false
+      },
+      "auto_scroll": {
+        "enabled": false,
+        "speed": 0
+      }
+    }
+  }
+}
