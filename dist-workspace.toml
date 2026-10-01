@@ -1,0 +1,36 @@
+# cargo-dist (dist) release configuration — plan U17.
+#
+# Pin deliberately. After changing this file, run:
+#   dist generate
+# to refresh `.github/workflows/release.yml`.
+#
+# Targets: macOS (Intel + Apple Silicon) and Linux musl (static-friendly).
+# Installers: shell + Homebrew tap. AUR and Nix are deferred (see plan Scope).
+#
+# The Homebrew tap repo must exist and CI needs a HOMEBREW_TAP_TOKEN (or the
+# default GITHUB_TOKEN with write access to the tap) before publish-jobs run.
+# Adjust `tap` when the public GitHub org/user is settled.
+
+[workspace]
+members = ["cargo:."]
+
+[dist]
+cargo-dist-version = "0.32.0"
+ci = "github"
+# Only the clap binary crate is distributed; library crates stay private.
+packages = ["wezterminator"]
+installers = ["shell", "homebrew"]
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "aarch64-unknown-linux-musl",
+    "x86_64-unknown-linux-musl",
+]
+# Placeholder: rename when the public remote / tap lands (wzt-0bj).
+tap = "ikari/homebrew-tap"
+publish-jobs = ["homebrew"]
+hosting = "github"
+pr-run-mode = "plan"
+install-updater = false
+# Prefer ~/.cargo/bin so `curl | sh` installers land next to other Rust tools.
+install-path = "CARGO_HOME"

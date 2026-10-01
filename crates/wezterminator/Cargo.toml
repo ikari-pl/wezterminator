@@ -5,6 +5,11 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 publish.workspace = true
+license = "MIT"
+# Placeholder until the public remote lands (wzt-0bj).
+repository = "https://github.com/ikari/wezterminator"
+homepage = "https://github.com/ikari/wezterminator"
+readme = "../../README.md"
 
 [[bin]]
 name = "wezterminator"
@@ -21,6 +26,10 @@ wzt-tui.workspace = true
 [dev-dependencies]
 serde_json.workspace = true
 tempfile.workspace = true
+
+# publish = false on the workspace would hide this binary from cargo-dist.
+[package.metadata.dist]
+dist = true
 
 [lints]
 workspace = true
