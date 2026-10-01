@@ -578,7 +578,7 @@ fn a_deliberately_dense_layer_fails_the_legibility_check() {
 
 #[test]
 fn shipped_themes_pass_the_legibility_check() {
-    // 1920x1080 is divisible by every scale the shipped recipes use (2, 3, 4).
+    // 1920x1080 is divisible by every scale the origin recipes use (2, 4).
     let device = Device {
         width: 1920,
         height: 1080,
@@ -599,15 +599,67 @@ fn shipped_themes_pass_the_legibility_check() {
             Err(other) => panic!("{slug}: {other}"),
         }
     }
-    // KNOWN, owned by U8 (recipe tuning): cpc-cool's dim text (#606070) has only
-    // 3.15:1 against its own base (#0c0c18), so its margin to the 3.0 floor is
-    // about a 4% lift, and its nebula, grid and haze together take it to ~2.7.
-    // The engine is right to refuse it. When U8 retunes the recipe, this list
-    // shrinks to empty and the test keeps passing.
     assert!(
-        failing.iter().all(|slug| *slug == "cpc-cool"),
-        "only cpc-cool is expected to fail legibility until U8 retunes it, got {failing:?}"
+        failing.is_empty(),
+        "origin themes must pass legibility, got failures: {failing:?}"
     );
+}
+
+// ---------------------------------------------------------------------------
+// Origin theme layer thumbnails (U8)
+// ---------------------------------------------------------------------------
+
+fn assert_origin_golden(slug: &str, layer_id: &str, layer: &Layer) {
+    let dir = golden_dir().join("origin").join(slug);
+    let path = dir.join(format!("{layer_id}.png"));
+    let name = format!("origin/{slug}/{layer_id}");
+    if let Ok(preview) = std::env::var("WZT_PREVIEW") {
+        let out = Path::new(&preview).join("origin").join(slug);
+        fs::create_dir_all(&out).unwrap();
+        write_png_file(&out.join(format!("{layer_id}.png")), layer, 8).unwrap();
+    }
+    if std::env::var_os("WZT_BLESS").is_some() {
+        fs::create_dir_all(&dir).unwrap();
+        write_png_file(&path, layer, 1).unwrap();
+        return;
+    }
+    let golden = read_png(&path).unwrap_or_else(|e| {
+        panic!("missing golden `{name}` ({e}); run with WZT_BLESS=1 to create it")
+    });
+    assert!(golden.indexed, "{name}: golden must be an indexed PNG");
+    assert_eq!(
+        (golden.width, golden.height),
+        (layer.width, layer.height),
+        "{name}: size"
+    );
+    let got = rgba_of(layer);
+    let differing = got.iter().zip(&golden.rgba).filter(|(a, b)| a != b).count();
+    assert_eq!(
+        differing, 0,
+        "{name}: {differing} pixels differ from the golden image"
+    );
+}
+
+#[test]
+fn origin_theme_layers_match_their_golden_thumbnails() {
+    // Large enough that starfield density (count per megapixel) still paints
+    // stars; divisible by the origin scales (2, 4).
+    let device = Device {
+        width: 960,
+        height: 540,
+    };
+    for slug in ["cpc-cool", "ember", "soft-nebula"] {
+        let theme = shipped(slug);
+        let rendered = render_theme(&theme, device, &Options::default()).unwrap();
+        assert!(
+            !rendered.is_empty(),
+            "{slug}: expected at least one layer"
+        );
+        for r in &rendered {
+            assert!(r.layer.covered() > 0, "{slug}/{} drew nothing", r.id);
+            assert_origin_golden(slug, &r.id, &r.layer);
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------

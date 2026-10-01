@@ -9,7 +9,7 @@
       "bg": "#0c0c18",
       "surface": "#000080",
       "fg": "#80ffff",
-      "fg_dim": "#606070",
+      "fg_dim": "#686878",
       "accent": "#80ffff",
       "accent_alt": "#00ffff",
       "ok": "#00ff80",
@@ -20,7 +20,7 @@
       "tab_active_bg": "#000080",
       "tab_active_fg": "#80ffff",
       "tab_inactive_bg": "#0c0c18",
-      "tab_inactive_fg": "#606070",
+      "tab_inactive_fg": "#686878",
       "tab_hover_bg": "#000080",
       "tab_hover_fg": "#80ffff"
     },
@@ -43,7 +43,7 @@
         "#c0c0c8"
       ],
       "brights": [
-        "#606070",
+        "#686878",
         "#ff4040",
         "#40ffA0",
         "#ffff80",
@@ -62,7 +62,7 @@
         "id": "nebula",
         "primitive": "cloud_blobs",
         "scale": 4,
-        "opacity": 0.12,
+        "opacity": 0.1,
         "parallax": {
           "vertical": 0.04,
           "horizontal": 0
@@ -81,14 +81,14 @@
           "horizontal": 0
         },
         "params": {
-          "count": 120
+          "count": 200
         }
       },
       {
         "id": "grid",
         "primitive": "perspective_grid",
-        "scale": 3,
-        "opacity": 0.35,
+        "scale": 4,
+        "opacity": 0.22,
         "parallax": {
           "vertical": 0.52,
           "horizontal": 0
@@ -99,7 +99,7 @@
         "id": "haze",
         "primitive": "dither_wash",
         "scale": 4,
-        "opacity": 0.18,
+        "opacity": 0.1,
         "parallax": {
           "vertical": 0.02,
           "horizontal": 0
@@ -137,7 +137,7 @@
   },
   "legibility": {
     "text": "#c0c0c8",
-    "dim_text": "#606070",
+    "dim_text": "#686878",
     "min_contrast": 3.0
   }
 }

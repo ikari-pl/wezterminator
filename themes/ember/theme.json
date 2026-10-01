@@ -81,13 +81,13 @@
           "horizontal": 0
         },
         "params": {
-          "count": 90
+          "count": 160
         }
       },
       {
         "id": "grid",
         "primitive": "perspective_grid",
-        "scale": 3,
+        "scale": 4,
         "opacity": 0.28,
         "parallax": {
           "vertical": 0.52,
