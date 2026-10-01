@@ -161,7 +161,7 @@ function M.cycle(dirs, step, ids, active)
 end
 
 ---------------------------------------------------------------------------
--- screens.json and engine.json (unwatched)
+-- screens.json (unwatched) and the engine record
 ---------------------------------------------------------------------------
 
 -- Write `doc` to `path` unless the file already holds the same content

@@ -307,9 +307,9 @@ function M.load(where)
   return { layers = layers, state = state, generation = generation, changed = true, errors = errors }
 end
 
---- The paths that should trigger a reload when they change. screens.json and
---- engine.json are deliberately NOT here, and neither is the state directory:
---- watching it would put those files on the watch list too.
+--- The paths that should trigger a reload when they change. screens.json is
+--- deliberately NOT here, and neither is the state directory: watching it
+--- would put that file on the watch list too.
 function M.watch_paths(dirs)
   local paths = { dirs.state .. '/state.json' }
   for _, layer in ipairs({ dirs.fleet, dirs['local'] }) do

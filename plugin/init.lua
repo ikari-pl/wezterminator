@@ -11,7 +11,9 @@
 --   wzt.apply_to_config(config, { dir = checkout })
 --
 -- One code path serves both. Nothing below touches the disk during config
--- evaluation: files are written only from event handlers and actions.
+-- evaluation: files are written only from event handlers and actions. (The one
+-- file this engine writes on its own, state.json's `engine` record and the
+-- unwatched screens.json, goes out from the first update-status per process.)
 
 local wezterm = require 'wezterm'
 
@@ -186,8 +188,57 @@ function M.apply_to_config(config, opts)
     unavailable = {},
   }
 
+  for _, e in ipairs(loaded.errors or {}) do
+    wezterm.log_warn('wezterminator: cannot read ' .. tostring(e.path) .. ': ' .. tostring(e.error))
+  end
+  for _, e in ipairs(result.ignored or {}) do
+    wezterm.log_warn(string.format(
+      'wezterminator: ignored %s %s (%s)', tostring(e.kind), tostring(e.ref), tostring(e.reason)))
+  end
+
+  -- Config keys and the background stack for a resolved preset. One function
+  -- serves the base config and previews, so the two cannot drift (the lesson
+  -- of metis's backgrounds.lua `config_for`).
+  local recorded_screens = state.read_screens(dirs)
+  local function build(resolved, machine)
+    local fragment, unavailable = apply.fragment(resolved, host)
+    local art = resolved.parts.art
+    local bg
+    if art then
+      local ui = resolved.parts.palette and resolved.parts.palette.ui
+      local motion = resolved.parts.motion
+      bg = apply.background(art, {
+        where = where,
+        machine = machine,
+        resolution = apply.pick_resolution(recorded_screens, machine.screen_overrides),
+        default_base = ui and ui.bg,
+        scrollback_parallax = not (motion and motion.scrollback_parallax == false),
+      })
+    end
+    return fragment, unavailable, bg
+  end
+
+  --- What a preview of `preset_id` looks like, as the plain-data payload the
+  --- aggregator's `preview` channel takes: { config = {...}, background = ... }.
+  --- Returns nil and a reason when the preset cannot be resolved. Nothing is
+  --- persisted; the caller hands the payload to overrides.preview_set.
+  function M.preview_payload(preset_id)
+    local previewed = resolve.resolve({
+      engine = { supported_schema_version = M.SCHEMA_VERSION, default_preset = opts.default_preset or M.DEFAULT_PRESET },
+      layers = loaded.layers,
+      state = { schema_version = M.SCHEMA_VERSION, active_preset = preset_id, history = resolve.new_array() },
+      environment = { installed_fonts = opts.installed_fonts },
+      addon = (mode == 'addon') and { owned_keys = owned } or nil,
+    })
+    if not previewed.resolved or previewed.active.id ~= preset_id then
+      return nil, 'preset ' .. tostring(preset_id) .. ' cannot be resolved'
+    end
+    local fragment, _, bg = build(previewed.resolved, previewed.machine)
+    return { config = fragment, background = bg }
+  end
+
   if result.resolved then
-    local fragment, unavailable = apply.fragment(result.resolved, host)
+    local fragment, unavailable, bg = build(result.resolved, result.machine)
     summary.unavailable = unavailable
 
     -- Never assign a key the user's config owns (add-on precedence).
@@ -199,21 +250,8 @@ function M.apply_to_config(config, opts)
 
     -- The background stack is data, kept for the aggregator; it is also what
     -- the config itself starts with.
-    local art = result.resolved.parts.art
-    local bg
-    if art then
-      local recorded = state.read_screens(dirs)
-      bg = apply.background(art, {
-        where = where,
-        machine = result.machine,
-        resolution = apply.pick_resolution(recorded, result.machine.screen_overrides),
-        default_base = result.resolved.parts.palette
-          and result.resolved.parts.palette.ui
-          and result.resolved.parts.palette.ui.bg,
-      })
-      if not owned_set.background then
-        config.background = apply.rest_layers(bg)
-      end
+    if bg and not owned_set.background then
+      config.background = apply.rest_layers(bg)
     end
     summary.background = bg
     overrides.set_base({
@@ -235,7 +273,7 @@ function M.apply_to_config(config, opts)
   end
 
   -- Reload on change: state.json and the local/fleet layer files. NOT
-  -- screens.json or engine.json, and not the state directory itself.
+  -- screens.json, and not the state directory itself.
   for _, path in ipairs(data.watch_paths(dirs)) do
     wezterm.add_to_config_reload_watch_list(path)
   end
@@ -255,6 +293,7 @@ function M.apply_to_config(config, opts)
       plugin_dir = dir,
       version = M.VERSION,
       schema_version = M.SCHEMA_VERSION,
+      default_preset = opts.default_preset or M.DEFAULT_PRESET,
     })
   end)
 

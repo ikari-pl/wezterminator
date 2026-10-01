@@ -99,6 +99,11 @@ function M.new(opts)
     stub.watched[#stub.watched + 1] = path
   end
 
+  stub.reloads = 0
+  function wezterm.reload_configuration()
+    stub.reloads = stub.reloads + 1
+  end
+
   function wezterm.glob(pattern)
     local p = io.popen('ls -d ' .. pattern:gsub('([^%w%*%?%[%]/%._%-])', '\\%1') .. ' 2>/dev/null')
     local out = {}

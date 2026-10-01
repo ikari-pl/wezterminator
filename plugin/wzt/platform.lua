@@ -118,7 +118,7 @@ end
 --- The directories the engine reads and writes.
 ---   local  user-authored layer (presets, themes, overrides.json, machine.json)
 ---   fleet  git clone of the private fleet repo (same layout)
----   state  state.json (watched), screens.json and engine.json (not watched)
+---   state  state.json (watched) and screens.json (not watched)
 ---   data   generated art under <data>/art/<theme>/<W>x<H>/
 --- XDG on macOS and Linux (macOS included, on purpose); Known Folders-ish on
 --- Windows. `opts.dirs` overrides any of them. Keep crates/wzt-model/paths.rs

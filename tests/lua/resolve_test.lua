@@ -91,6 +91,34 @@ for _, path in ipairs(fixtures) do
 end
 
 ---------------------------------------------------------------------------
+-- The harness itself: a matcher that cannot fail would make every fixture
+-- above meaningless.
+---------------------------------------------------------------------------
+
+T.test('harness: the matcher rejects wrong values, extra keys and array/object mix-ups', function()
+  local arr, obj = resolve.new_array(), {}
+  T.ok(T.match({ a = 1 }, { a = 2 }), 'different scalar')
+  T.ok(T.match({ a = 1 }, { a = 1, b = 2 }), 'unexpected extra key')
+  T.ok(T.match({ a = 1, b = 2 }, { a = 1 }), 'missing key')
+  T.ok(T.match(arr, obj), 'empty array is not an empty object')
+  T.ok(T.match(obj, arr), 'empty object is not an empty array')
+  T.ok(T.match({ 1, 2 }, { 2, 1 }), 'array order matters')
+  T.ok(T.match(json.NULL, 'x'), 'expected null, got a value')
+  T.eq(T.match({ a = { 1, 2 } }, { a = { 1, 2 } }), nil, 'identical values match')
+  T.eq(T.match(json.NULL, nil), nil, 'null matches absent')
+end)
+
+T.test('harness: JSON pointers index arrays from zero and unescape ~0 ~1', function()
+  local doc = { list = { { v = 'first' }, { v = 'second' } }, ['a/b'] = { ['c~d'] = 7 } }
+  local found, v = T.pointer(doc, '/list/1/v')
+  T.ok(found and v == 'second')
+  found, v = T.pointer(doc, '/a~1b/c~0d')
+  T.ok(found and v == 7)
+  T.ok(not T.pointer(doc, '/list/2'), 'past the end')
+  T.ok(not T.pointer(doc, '/nope/x'))
+end)
+
+---------------------------------------------------------------------------
 -- Unit tests for the pure helpers
 ---------------------------------------------------------------------------
 

@@ -123,6 +123,14 @@ function M.fragment(resolved, host)
   if scheme then
     if scheme.wezterm_scheme then
       cfg.color_scheme = scheme.wezterm_scheme
+      -- A stock scheme brings its own background, which can sit far from the
+      -- art (Gruvbox is luminance 27-48 against Ember's 8). The art's base
+      -- colour wins so the scheme cannot fight the artwork (metis
+      -- backgrounds.lua, `config_for`).
+      local base = parts.art and parts.art.base_color
+      if base then
+        cfg.colors = { background = base }
+      end
     elseif scheme.colors then
       cfg.colors = scheme_colors(scheme.colors)
     end
@@ -153,7 +161,12 @@ function M.fragment(resolved, host)
     end
     if chrome.blur ~= nil and chrome.blur > 0 then
       if host.blur_key then
-        cfg[host.blur_key] = chrome.blur
+        -- macOS takes a radius; the KDE and Wayland keys are plain on/off.
+        if host.blur_key == 'macos_window_background_blur' then
+          cfg[host.blur_key] = chrome.blur
+        else
+          cfg[host.blur_key] = true
+        end
       else
         unavailable[#unavailable + 1] = {
           path = 'chrome.blur',
@@ -294,6 +307,8 @@ end
 ---   machine = merged machine settings (for dev_art_path),
 ---   resolution = {w, h} or nil,
 ---   default_base = colour used when the theme has no base_color,
+---   scrollback_parallax = false pins every layer (motion.scrollback_parallax
+---     is off); anything else lets layers use WezTerm's native Parallax,
 ---   accept_art = optional function(source) -> bool,
 --- }
 ---
@@ -337,7 +352,7 @@ function M.background(art, ctx)
             opacity = layer.opacity or 1.0,
             vertical_offset = 0,
             horizontal_offset = 0,
-            attachment = (pv ~= 0) and { Parallax = pv } or 'Fixed',
+            attachment = (pv ~= 0 and ctx.scrollback_parallax ~= false) and { Parallax = pv } or 'Fixed',
           }
           -- Pin non-repeating layers to the art's native size; leaving them at
           -- "100%" would resample and smear the hard pixel edges. Repeating
