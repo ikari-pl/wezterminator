@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "builtin:wycinanki",
+  "name": "Wycinanki",
+  "based_on": null,
+  "parts": {
+    "art": { "theme": "builtin:wycinanki" },
+    "scheme": { "theme": "builtin:wycinanki" },
+    "palette": { "theme": "builtin:wycinanki" },
+    "font": {
+      "preferred": ["FiraCode Nerd Font", "BlexMono Nerd Font Mono"],
+      "fallback": ["FiraCode Nerd Font Mono", "JetBrains Mono", "Menlo"],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 1.0,
+      "padding": { "left": 6, "right": 6, "top": 4, "bottom": 4 }
+    },
+    "status": {
+      "style": "sparkline",
+      "segments": ["load", "memory", "battery", "cwd", "clock"]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+      "auto_scroll": { "enabled": false, "speed": 0 }
+    }
+  }
+}

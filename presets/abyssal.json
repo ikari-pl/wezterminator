@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "builtin:abyssal",
+  "name": "Abyssal",
+  "based_on": null,
+  "parts": {
+    "art": { "theme": "builtin:abyssal" },
+    "scheme": { "theme": "builtin:abyssal" },
+    "palette": { "theme": "builtin:abyssal" },
+    "font": {
+      "preferred": ["FiraCode Nerd Font", "GeistMono Nerd Font"],
+      "fallback": ["FiraCode Nerd Font Mono", "JetBrains Mono", "Menlo"],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 0.96,
+      "blur": 18,
+      "padding": { "left": 6, "right": 6, "top": 4, "bottom": 4 }
+    },
+    "status": {
+      "style": "pill",
+      "segments": ["cwd", "battery", "clock", "workspace"]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+      "auto_scroll": { "enabled": false, "speed": 0 }
+    }
+  }
+}

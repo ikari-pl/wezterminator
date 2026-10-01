@@ -1,0 +1,159 @@
+{
+  "_": "P1 green CRT: green-led with afterglow, scanlines, bloom and vignette; amber warning accent.",
+  "schema_version": 1,
+  "id": "builtin:phosphor",
+  "name": "Phosphor",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#041008",
+      "surface": "#0a1c10",
+      "fg": "#33ff66",
+      "fg_dim": "#348848",
+      "accent": "#33ff66",
+      "accent_alt": "#7dff9a",
+      "ok": "#33ff66",
+      "warn": "#ffb000",
+      "bad": "#ff4040",
+      "info": "#66ffaa",
+      "tab_bar_bg": "#041008",
+      "tab_active_bg": "#0a1c10",
+      "tab_active_fg": "#33ff66",
+      "tab_inactive_bg": "#041008",
+      "tab_inactive_fg": "#348848",
+      "tab_hover_bg": "#0a1c10",
+      "tab_hover_fg": "#7dff9a"
+    },
+    "scheme": {
+      "_": "Green-led terminal with amber warn; not strictly monochrome.",
+      "foreground": "#a8e8b8",
+      "background": "#041008",
+      "cursor_bg": "#33ff66",
+      "cursor_fg": "#041008",
+      "selection_bg": "#0a1c10",
+      "selection_fg": "#a8e8b8",
+      "ansi": [
+        "#041008",
+        "#cc4040",
+        "#33ff66",
+        "#ffb000",
+        "#2a8a50",
+        "#c08040",
+        "#40c080",
+        "#88b898"
+      ],
+      "brights": [
+        "#348848",
+        "#ff6060",
+        "#7dff9a",
+        "#ffd040",
+        "#50c080",
+        "#e0a060",
+        "#66ffaa",
+        "#d0f0d8"
+      ]
+    }
+  },
+  "art": {
+    "seed": 1977,
+    "base_color": "#041008",
+    "layers": [
+      {
+        "id": "afterglow",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.1,
+        "parallax": { "vertical": 0.03, "horizontal": 0 },
+        "params": {
+          "blob_count": 5,
+          "ramp": ["surface", "accent", "accent_alt"],
+          "alpha": 90,
+          "threshold": 8,
+          "spread": 120
+        }
+      },
+      {
+        "id": "sparks",
+        "primitive": "starfield",
+        "scale": 2,
+        "opacity": 0.35,
+        "parallax": { "vertical": 0.08, "horizontal": 0 },
+        "params": {
+          "count": 80,
+          "crosses": 4,
+          "colors": ["accent", "warn", "fg_dim"],
+          "alpha": 160
+        }
+      },
+      {
+        "id": "bloom",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.08,
+        "parallax": { "vertical": 0.02, "horizontal": 0 },
+        "params": {
+          "direction": "center",
+          "colors": ["accent", "accent_alt"],
+          "alpha": 70,
+          "strength": 45
+        }
+      },
+      {
+        "id": "scan",
+        "primitive": "scanlines",
+        "scale": 2,
+        "opacity": 0.55,
+        "parallax": { "vertical": 0, "horizontal": 0 },
+        "params": {
+          "period": 3,
+          "thickness": 1,
+          "alpha": 50,
+          "color": "bg"
+        }
+      },
+      {
+        "id": "roll",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.05,
+        "parallax": { "vertical": 0.4, "horizontal": 0 },
+        "params": {
+          "direction": "top",
+          "colors": ["accent"],
+          "alpha": 60,
+          "strength": 35
+        }
+      },
+      {
+        "id": "tube",
+        "primitive": "vignette",
+        "scale": 4,
+        "opacity": 0.35,
+        "parallax": { "vertical": 0, "horizontal": 0 },
+        "params": {
+          "alpha": 160,
+          "color": "bg"
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#041008" },
+    {
+      "kind": "gradient",
+      "shape": "radial",
+      "colors": ["#0a1c10", "#041008"],
+      "opacity": 0.45
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+    "auto_scroll": { "enabled": false, "speed": 0 }
+  },
+  "legibility": {
+    "text": "#a8e8b8",
+    "dim_text": "#348848",
+    "min_contrast": 3.0
+  }
+}
