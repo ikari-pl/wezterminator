@@ -1,12 +1,14 @@
 //! The `wezterminator` binary.
 //!
-//! Every subcommand is a stub until its unit lands. Each accepts and ignores
-//! trailing arguments, so scripts written against the planned interface fail
-//! with the "not implemented" message rather than a usage error.
+//! Subcommands are stubs until their unit lands (`stats` is real, from U6).
+//! Each stub accepts and ignores trailing arguments, so scripts written
+//! against the planned interface fail with the "not implemented" message
+//! rather than a usage error.
 
 use std::process::ExitCode;
 
 use clap::{Args, Parser, Subcommand};
+use wzt_model::Paths;
 
 #[derive(Debug, Parser)]
 #[command(
@@ -27,6 +29,13 @@ struct Pending {
     args: Vec<String>,
 }
 
+#[derive(Debug, Args)]
+struct StatsArgs {
+    /// Print the line to stdout instead of writing the status cache.
+    #[arg(long)]
+    stdout: bool,
+}
+
 #[derive(Debug, Subcommand)]
 enum Command {
     /// Browse presets and edit theme parts, previewing live in WezTerm.
@@ -34,7 +43,7 @@ enum Command {
     /// Generate, import and pack theme art.
     Art(Pending),
     /// Write one key=value line of system stats to the status cache.
-    Stats(Pending),
+    Stats(StatsArgs),
     /// Check fonts, art, screens and the install, and say what is wrong.
     Doctor(Pending),
     /// Install wezterminator in add-on, replace or replace-and-import mode.
@@ -48,25 +57,63 @@ enum Command {
 }
 
 impl Command {
-    /// The subcommand name and the unit that implements it.
-    fn stub(&self) -> (&'static str, &'static str) {
+    /// The subcommand name and the unit that implements it, or `None` once
+    /// the subcommand is real.
+    fn stub(&self) -> Option<(&'static str, &'static str)> {
         match self {
-            Command::Tui(_) => ("tui", "U12"),
-            Command::Art(_) => ("art", "U7"),
-            Command::Stats(_) => ("stats", "U6"),
-            Command::Doctor(_) => ("doctor", "U11"),
-            Command::Install(_) => ("install", "U15"),
-            Command::Uninstall(_) => ("uninstall", "U15"),
-            Command::Fleet(_) => ("fleet", "U16"),
-            Command::Push(_) => ("push", "U16"),
+            Command::Tui(_) => Some(("tui", "U12")),
+            Command::Art(_) => Some(("art", "U7")),
+            Command::Stats(_) => None,
+            Command::Doctor(_) => Some(("doctor", "U11")),
+            Command::Install(_) => Some(("install", "U15")),
+            Command::Uninstall(_) => Some(("uninstall", "U15")),
+            Command::Fleet(_) => Some(("fleet", "U16")),
+            Command::Push(_) => Some(("push", "U16")),
+        }
+    }
+}
+
+/// `wezterminator stats`: sample this machine and write the status cache.
+fn stats(args: &StatsArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator stats: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+
+    // Skipped settings are worth a note, but never stop the line from being written.
+    let report = if args.stdout {
+        Ok(wzt_stats::sample(&paths))
+    } else {
+        wzt_stats::run(&paths)
+    };
+    match report {
+        Ok(report) => {
+            for warning in &report.warnings {
+                eprintln!("wezterminator stats: {warning}");
+            }
+            if args.stdout {
+                print!("{}", report.sample.render());
+            }
+            ExitCode::SUCCESS
+        }
+        Err(error) => {
+            eprintln!("wezterminator stats: {error}");
+            ExitCode::FAILURE
         }
     }
 }
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
-    let (name, unit) = cli.command.stub();
-    eprintln!("wezterminator {name}: not implemented yet (planned in {unit})");
+    if let Command::Stats(args) = &cli.command {
+        return stats(args);
+    }
+    if let Some((name, unit)) = cli.command.stub() {
+        eprintln!("wezterminator {name}: not implemented yet (planned in {unit})");
+    }
     ExitCode::FAILURE
 }
 
@@ -87,6 +134,19 @@ mod tests {
         for expected in ["tui", "art", "stats", "doctor", "install", "uninstall", "fleet", "push"] {
             assert!(names.iter().any(|n| n == expected), "missing `{expected}`");
         }
+    }
+
+    #[test]
+    fn stats_is_real_and_every_other_subcommand_is_still_a_stub() {
+        let stub = |args: &[&str]| Cli::try_parse_from(args).unwrap().command.stub();
+        assert_eq!(stub(&["wezterminator", "stats"]), None);
+        assert_eq!(stub(&["wezterminator", "stats", "--stdout"]), None);
+        assert_eq!(stub(&["wezterminator", "doctor"]), Some(("doctor", "U11")));
+    }
+
+    #[test]
+    fn stats_rejects_unknown_flags() {
+        assert!(Cli::try_parse_from(["wezterminator", "stats", "--nope"]).is_err());
     }
 
     #[test]

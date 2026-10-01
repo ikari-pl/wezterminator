@@ -366,6 +366,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "wzt-model",
+ "wzt-stats",
 ]
 
 [[package]]
@@ -392,6 +393,15 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror",
+]
+
+[[package]]
+name = "wzt-stats"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "tempfile",
+ "wzt-model",
 ]
 
 [[package]]

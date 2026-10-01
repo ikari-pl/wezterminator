@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/wzt-model", "crates/wezterminator"]
+members = ["crates/wzt-model", "crates/wzt-stats", "crates/wezterminator"]
 
 [workspace.package]
 version = "0.1.0"
@@ -19,6 +19,7 @@ tempfile = "3"
 thiserror = "2"
 
 wzt-model = { path = "crates/wzt-model" }
+wzt-stats = { path = "crates/wzt-stats" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
