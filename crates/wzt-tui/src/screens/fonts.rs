@@ -3,8 +3,44 @@
 use ratatui::prelude::*;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Borders, List, ListItem, Paragraph};
+use wzt_fonts::FontCatalog;
 
-use crate::app::Model;
+use crate::app::{FontRow, FontsState, Model};
+
+/// Mark preferred rows against an installed-family catalog (R20).
+pub fn apply_catalog(state: &mut FontsState, catalog: &FontCatalog) {
+    for row in &mut state.rows {
+        row.installed = catalog.contains(&row.family);
+    }
+}
+
+/// Build rows from preferred names plus catalog extras.
+pub fn rows_from_preferred(preferred: &[String], catalog: &FontCatalog) -> Vec<FontRow> {
+    let mut rows: Vec<FontRow> = preferred
+        .iter()
+        .map(|family| FontRow {
+            family: family.clone(),
+            preferred: true,
+            installed: catalog.contains(family),
+            polish_ok: None,
+            nerd_ok: None,
+            correction: None,
+        })
+        .collect();
+    for family in &catalog.families {
+        if !rows.iter().any(|r| r.family.eq_ignore_ascii_case(family)) {
+            rows.push(FontRow {
+                family: family.clone(),
+                preferred: false,
+                installed: true,
+                polish_ok: None,
+                nerd_ok: None,
+                correction: None,
+            });
+        }
+    }
+    rows
+}
 
 pub fn render(frame: &mut Frame, area: Rect, model: &mut Model) {
     let chunks = Layout::vertical([
@@ -68,4 +104,24 @@ pub fn render(frame: &mut Frame, area: Rect, model: &mut Model) {
     let status = Paragraph::new(model.status.as_str())
         .block(Block::default().borders(Borders::TOP).title(" status "));
     frame.render_widget(status, chunks[3]);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn catalog_marks_missing_preferred() {
+        let catalog = FontCatalog::from_families(["Menlo"]);
+        let mut state = FontsState::default();
+        apply_catalog(&mut state, &catalog);
+        let terminess = state
+            .rows
+            .iter()
+            .find(|r| r.family.contains("Terminess"))
+            .unwrap();
+        assert!(!terminess.installed);
+        let menlo = state.rows.iter().find(|r| r.family == "Menlo").unwrap();
+        assert!(menlo.installed);
+    }
 }

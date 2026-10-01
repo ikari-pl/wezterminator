@@ -58,9 +58,11 @@ fn sample_model(screen: Screen) -> Model {
     }
     keys.refresh_conflicts();
 
-    let mut author = AuthorState::default();
-    author.tab = AuthorTab::Palette;
-    author.contrast_warning = String::new();
+    let author = AuthorState {
+        tab: AuthorTab::Palette,
+        contrast_warning: String::new(),
+        ..AuthorState::default()
+    };
 
     Model {
         screen,
