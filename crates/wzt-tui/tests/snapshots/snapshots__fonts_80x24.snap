@@ -2,15 +2,14 @@
 source: crates/wzt-tui/tests/snapshots.rs
 expression: shot
 ---
- wezterminator  ·  presets  ·  preview:wezterm  ·  tab:parts  ·  A/K/M/F  ·  ent
-┌ Presets ─────────────────────────────────────────────────────────────────────┐
-│  *  CPC Cool                builtin:cpc-cool  [builtin]                      │
-│>    Ember                   builtin:ember     [builtin]                      │
-│     Soft Nebula             builtin:soft-nebula  [builtin]                   │
-│     Mine                    local:mine        [local]                        │
-│                                                                              │
-│                                                                              │
-│                                                                              │
+ wezterminator  ·  fonts  ·  save:local-preset  ·  [/]:size  ·  c:correction  · 
+┌ Size ────────────────────────────────────────────────────────────────────────┐
+│ base size: 14.0 pt   preferred marked with *   ! = missing   p = polish gap  │
+└──────────────────────────────────────────────────────────────────────────────┘
+┌ Families ────────────────────────────────────────────────────────────────────┐
+│> *    Terminess Nerd Font Mono                                               │
+│  *!·· ProggyVector                              corr:+1.0                    │
+│     n Menlo                                                                  │
 │                                                                              │
 │                                                                              │
 │                                                                              │

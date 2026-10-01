@@ -11,6 +11,8 @@ ratatui.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
+wzt-art.workspace = true
+wzt-fonts.workspace = true
 wzt-model.workspace = true
 wzt-preview.workspace = true
 

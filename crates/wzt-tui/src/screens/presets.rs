@@ -18,7 +18,7 @@ pub fn render(frame: &mut Frame, area: Rect, model: &mut Model) {
         PreviewMode::Browser => "browser",
     };
     let title = Paragraph::new(format!(
-        " wezterminator  ·  presets  ·  preview:{mode}  ·  tab:parts  ·  enter:commit  ·  esc:cancel "
+        " wezterminator  ·  presets  ·  preview:{mode}  ·  tab:parts  ·  A/K/M/F  ·  enter:commit  ·  esc:quit "
     ))
     .style(Style::new().fg(Color::Cyan));
     frame.render_widget(title, chunks[0]);

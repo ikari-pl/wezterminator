@@ -2,15 +2,14 @@
 source: crates/wzt-tui/tests/snapshots.rs
 expression: shot
 ---
- wezterminator  ·  presets  ·  preview:wezterm  ·  tab:parts  ·  A/K/M/F  ·  ent
-┌ Presets ─────────────────────────────────────────────────────────────────────┐
-│  *  CPC Cool                builtin:cpc-cool  [builtin]                      │
-│>    Ember                   builtin:ember     [builtin]                      │
-│     Soft Nebula             builtin:soft-nebula  [builtin]                   │
-│     Mine                    local:mine        [local]                        │
-│                                                                              │
-│                                                                              │
-│                                                                              │
+ wezterminator  ·  motion  ·  save:local-preset  ·  space:toggle  ·  [/]:speed  
+┌ Motion ──────────────────────────────────────────────────────────────────────┐
+│> scrollback parallax   on                                                    │
+│  ALT+wheel vertical    on                                                    │
+│  ALT+wheel horizontal  off                                                   │
+│  auto-scroll           off                                                   │
+│  auto-scroll speed     0.0 px/tick                                           │
+│  auto-scroll axis      vertical                                              │
 │                                                                              │
 │                                                                              │
 │                                                                              │
