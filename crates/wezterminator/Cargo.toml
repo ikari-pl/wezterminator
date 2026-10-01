@@ -1,0 +1,35 @@
+[package]
+name = "wezterminator"
+description = "Composable WezTerm presets: TUI, art engine, installer and fleet tooling"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license = "MIT"
+# Placeholder until the public remote lands (wzt-0bj).
+repository = "https://github.com/ikari-pl/wezterminator"
+homepage = "https://github.com/ikari-pl/wezterminator"
+readme = "../../README.md"
+
+[[bin]]
+name = "wezterminator"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+wzt-art.workspace = true
+wzt-model.workspace = true
+wzt-ops.workspace = true
+wzt-stats.workspace = true
+wzt-tui.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile.workspace = true
+
+# publish = false on the workspace would hide this binary from cargo-dist.
+[package.metadata.dist]
+dist = true
+
+[lints]
+workspace = true

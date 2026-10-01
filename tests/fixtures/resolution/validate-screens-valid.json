@@ -1,0 +1,15 @@
+{
+  "_": "screens.json: device-pixel sizes of connected screens.",
+  "name": "validate-screens-valid",
+  "kind": "validation",
+  "schema": "schema/state.schema.json",
+  "def": "screens_document",
+  "document": {
+    "schema_version": 1,
+    "screens": [
+      {"name": "Built-in Retina", "width": 3024, "height": 1964},
+      {"width": 6016, "height": 3384}
+    ]
+  },
+  "valid": true
+}

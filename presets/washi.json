@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "builtin:washi",
+  "name": "Washi",
+  "based_on": null,
+  "parts": {
+    "art": { "theme": "builtin:washi" },
+    "scheme": { "theme": "builtin:washi" },
+    "palette": { "theme": "builtin:washi" },
+    "font": {
+      "preferred": ["IBM Plex Mono", "GeistMono Nerd Font"],
+      "fallback": ["FiraCode Nerd Font Mono", "JetBrains Mono", "Menlo"],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 1.0,
+      "padding": { "left": 8, "right": 8, "top": 6, "bottom": 6 }
+    },
+    "status": {
+      "style": "pill",
+      "segments": ["cwd", "battery", "clock", "workspace"]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+      "auto_scroll": { "enabled": false, "speed": 0 }
+    }
+  }
+}

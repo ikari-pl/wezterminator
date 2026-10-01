@@ -1,0 +1,30 @@
+{
+  "_": "Not even the default preset exists (empty built-in layer). Resolution reports a typed error and resolved is null. It must not panic or raise.",
+  "name": "resolve-no-resolvable-preset",
+  "kind": "resolution",
+  "covers": ["missing-active-preset"],
+  "input": {
+    "engine": {"supported_schema_version": 1, "default_preset": "builtin:neon-night"},
+    "layers": {
+      "builtin": {"presets": [], "themes": [], "overrides": null, "machine": null},
+      "fleet": null,
+      "local": null
+    },
+    "state": {"schema_version": 1, "active_preset": "builtin:neon-night", "history": []},
+    "environment": {"installed_fonts": null},
+    "addon": null
+  },
+  "expected": {
+    "resolved": null,
+    "error": {"code": "no_resolvable_preset"},
+    "active": {"requested": "builtin:neon-night", "id": null, "fell_back": false},
+    "catalog": [],
+    "notices": [
+      {
+        "code": "active_preset_missing",
+        "requested": "builtin:neon-night",
+        "used": "builtin:neon-night"
+      }
+    ]
+  }
+}

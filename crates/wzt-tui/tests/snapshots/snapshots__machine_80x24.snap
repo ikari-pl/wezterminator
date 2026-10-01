@@ -1,0 +1,27 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  machine  ·  local layer only  ·  s:save  ·  esc:back         
+┌ Machine settings (not exported with presets) ────────────────────────────────┐
+│> project_roots       ~/src                                                   │
+│  issue_url_pattern   (unset)                                                 │
+│  issue_key_pattern   (unset)                                                 │
+│  editor              nvim                                                    │
+│  vpn_probes          tailscale, warp                                         │
+│  push_targets        (none)                                                  │
+│  dev_art_path        (unset)                                                 │
+│  screen_overrides    (none)                                                  │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────
+wezterm preview

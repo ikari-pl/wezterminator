@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>wezterminator preview</title>
+  <style>
+    :root {
+      --bg: #0c0c18;
+      --fg: #c0c0c8;
+      --fg-dim: #686878;
+      --accent: #80ffff;
+      --tab-bar-bg: #0c0c18;
+      --tab-active-bg: #000080;
+      --tab-active-fg: #80ffff;
+      --tab-inactive-fg: #686878;
+      --status-bg: #000040;
+      --status-fg: #80ffff;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #111118;
+      color: var(--fg);
+      font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .frame {
+      width: min(960px, 100%);
+      border: 1px solid #2a2a3a;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      background: #1a1a24;
+    }
+    .chrome {
+      display: flex;
+      gap: 0.4rem;
+      padding: 0.55rem 0.75rem;
+      background: #222230;
+      border-bottom: 1px solid #2a2a3a;
+    }
+    .chrome .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #555;
+    }
+    .chrome .dot:nth-child(1) { background: #ff5f56; }
+    .chrome .dot:nth-child(2) { background: #ffbd2e; }
+    .chrome .dot:nth-child(3) { background: #27c93f; }
+    .chrome .title {
+      margin-left: 0.75rem;
+      font-size: 0.75rem;
+      color: #8888a0;
+      align-self: center;
+    }
+    .term {
+      position: relative;
+      height: 520px;
+      background: var(--bg);
+      overflow: hidden;
+    }
+    .layers {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .layers .layer {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+    }
+    .tabs {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      gap: 2px;
+      padding: 0.35rem 0.5rem 0;
+      background: var(--tab-bar-bg);
+      border-bottom: 1px solid color-mix(in srgb, var(--fg-dim) 35%, transparent);
+    }
+    .tab {
+      padding: 0.35rem 0.85rem;
+      font-size: 0.8rem;
+      color: var(--tab-inactive-fg);
+      border-radius: 4px 4px 0 0;
+    }
+    .tab.active {
+      background: var(--tab-active-bg);
+      color: var(--tab-active-fg);
+    }
+    .body {
+      position: relative;
+      z-index: 2;
+      padding: 1rem 1.1rem 2.5rem;
+      min-height: calc(100% - 2.2rem);
+      color: var(--fg);
+      font-size: 0.9rem;
+      line-height: 1.45;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    }
+    .body .prompt { color: var(--accent); }
+    .body .dim { color: var(--fg-dim); }
+    .status {
+      position: absolute;
+      z-index: 3;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.35rem 0.75rem;
+      background: var(--status-bg);
+      color: var(--status-fg);
+      font-size: 0.75rem;
+    }
+    .status.pill .seg {
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      border-radius: 999px;
+      padding: 0.1rem 0.55rem;
+    }
+    .meta {
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      color: #8888a0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="frame">
+      <div class="chrome">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="title" id="window-title">wezterminator · approximate preview</span>
+      </div>
+      <div class="term">
+        <div class="layers" id="layers"></div>
+        <div class="tabs" id="tabs">
+          <div class="tab active" id="tab-active">preview</div>
+          <div class="tab">shell</div>
+        </div>
+        <div class="body">
+          <div><span class="prompt">❯</span> wezterminator tui</div>
+          <div class="dim"># live WezTerm OSC unavailable — browser approximation</div>
+          <div id="sample-lines"></div>
+        </div>
+        <div class="status sparkline" id="status">
+          <span class="seg" id="status-left">wzt</span>
+          <span class="seg" id="status-right">sparkline ▁▂▃▅▃▂</span>
+        </div>
+      </div>
+    </div>
+    <div class="meta" id="meta">waiting for selection…</div>
+  </div>
+  <script>
+    let lastVersion = -1;
+
+    function applyColors(c) {
+      const root = document.documentElement.style;
+      root.setProperty("--bg", c.bg);
+      root.setProperty("--fg", c.fg);
+      root.setProperty("--fg-dim", c.fg_dim);
+      root.setProperty("--accent", c.accent);
+      root.setProperty("--tab-bar-bg", c.tab_bar_bg);
+      root.setProperty("--tab-active-bg", c.tab_active_bg);
+      root.setProperty("--tab-active-fg", c.tab_active_fg);
+      root.setProperty("--tab-inactive-fg", c.tab_inactive_fg);
+      root.setProperty("--status-bg", c.status_bg);
+      root.setProperty("--status-fg", c.status_fg);
+    }
+
+    function layerStyle(layer) {
+      const opacity = layer.opacity == null ? 1 : layer.opacity;
+      if (layer.kind === "color") {
+        return `background-color: ${layer.color}; opacity: ${opacity};`;
+      }
+      if (layer.kind === "gradient") {
+        const angle = layer.angle == null ? 90 : layer.angle;
+        const stops = (layer.colors || []).join(", ");
+        return `background-image: linear-gradient(${angle}deg, ${stops}); opacity: ${opacity};`;
+      }
+      if (layer.kind === "image") {
+        return `background-image: url("${layer.data_url}"); opacity: ${opacity};`;
+      }
+      return "";
+    }
+
+    function renderLayers(layers) {
+      const el = document.getElementById("layers");
+      el.innerHTML = "";
+      (layers || []).forEach((layer) => {
+        const div = document.createElement("div");
+        div.className = "layer";
+        div.setAttribute("style", layerStyle(layer));
+        el.appendChild(div);
+      });
+    }
+
+    function renderState(state) {
+      applyColors(state.colors);
+      renderLayers(state.layers);
+      document.getElementById("tab-active").textContent = state.preset_name || "preview";
+      document.getElementById("window-title").textContent =
+        `wezterminator · ${state.preset_name || "preview"}`;
+      const status = document.getElementById("status");
+      const style = state.status_style || "sparkline";
+      status.className = "status " + style;
+      document.getElementById("status-left").textContent = state.preset_id || "wzt";
+      document.getElementById("status-right").textContent =
+        style === "pill" ? "cwd  ·  bat  ·  ws" : "sparkline ▁▂▃▅▇▅▃▂";
+      const sample = document.getElementById("sample-lines");
+      sample.innerHTML =
+        `<div><span class="prompt">❯</span> echo ${escapeHtml(state.preset_id)}</div>` +
+        `<div class="dim">${escapeHtml(state.preset_name)} · v${state.version}</div>` +
+        `<div>foreground sample <span style="color:var(--accent)">accent</span> <span class="dim">dim</span></div>`;
+      document.getElementById("meta").textContent =
+        `${state.preset_id} · version ${state.version}`;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    async function poll() {
+      try {
+        const vRes = await fetch("/api/version", { cache: "no-store" });
+        if (!vRes.ok) return;
+        const vJson = await vRes.json();
+        if (vJson.version === lastVersion) return;
+        const sRes = await fetch("/api/state", { cache: "no-store" });
+        if (!sRes.ok) return;
+        const state = await sRes.json();
+        lastVersion = state.version;
+        renderState(state);
+      } catch (_) {
+        /* server may be restarting */
+      }
+    }
+
+    poll();
+    setInterval(poll, 400);
+  </script>
+</body>
+</html>

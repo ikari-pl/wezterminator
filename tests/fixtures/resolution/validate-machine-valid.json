@@ -1,0 +1,24 @@
+{
+  "_": "Every machine setting, including the development-only art path and screen-resolution overrides.",
+  "name": "validate-machine-valid",
+  "kind": "validation",
+  "schema": "schema/machine.schema.json",
+  "document": {
+    "schema_version": 1,
+    "project_roots": ["~/work", "/srv/code"],
+    "issue_url_pattern": "https://issues.example.test/browse/{key}",
+    "issue_key_pattern": "[A-Z]+-[0-9]+",
+    "vpn_probes": [
+      {"id": "ts", "kind": "tailscale", "enabled": true, "ttl_seconds": 10, "timeout_ms": 800},
+      {"id": "lab", "kind": "command", "command": ["ping", "-c1", "lab.lan"], "label": "LAB"}
+    ],
+    "editor": {"command": "nvim", "args": ["-p"]},
+    "push_targets": {"laptop": {"hosts": ["laptop-vpn", "laptop.lan"], "user": "dev", "port": 22}},
+    "dev_art_path": "/tmp/dev-art",
+    "screen_overrides": [
+      {"name": "Built-in Retina", "width": 3024, "height": 1964},
+      {"width": 6016, "height": 3384}
+    ]
+  },
+  "valid": true
+}

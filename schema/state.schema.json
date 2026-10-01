@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "wezterminator engine state",
+  "description": "state.json in the engine state directory. Watched by WezTerm, so only the TUI and CLI write it, never Lua during config evaluation. Recorded screens live in the sibling screens.json (see $defs/screens_document), which is deliberately not watched. Keys starting with an underscore are comments: '_' describes the enclosing object, '_<key>' describes the sibling '<key>'.",
+  "type": "object",
+  "required": ["schema_version", "active_preset", "history"],
+  "properties": {
+    "schema_version": { "$ref": "preset.schema.json#/$defs/schema_version" },
+    "active_preset": { "$ref": "preset.schema.json#/$defs/preset_id" },
+    "history": {
+      "description": "Undo stack of previously active presets, oldest first, capped at 20. A commit pushes the outgoing preset and drops the oldest entry beyond the cap. Undo pops the newest entry and makes it active.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["preset", "at"],
+        "properties": {
+          "preset": { "$ref": "preset.schema.json#/$defs/preset_id" },
+          "at": { "type": "string", "format": "date-time" }
+        },
+        "patternProperties": { "^_": {} },
+        "additionalProperties": false
+      },
+      "maxItems": 20
+    },
+    "install_mode": { "enum": ["add-on", "replace", "replace-import"] },
+    "engine": {
+      "description": "Written by the Lua engine so the Rust side reads the same built-ins the running Lua uses.",
+      "type": "object",
+      "required": ["plugin_dir", "version", "schema_version"],
+      "properties": {
+        "plugin_dir": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "schema_version": {
+          "description": "Highest document schema_version the engine supports.",
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": { "^_": {} },
+  "additionalProperties": false,
+  "$defs": {
+    "screens_document": {
+      "description": "screens.json. Device-pixel sizes of the connected screens, written by Lua from a GUI event and only when the list changed. Art is generated for the screen with the largest pixel area.",
+      "type": "object",
+      "required": ["schema_version", "screens"],
+      "properties": {
+        "schema_version": { "$ref": "preset.schema.json#/$defs/schema_version" },
+        "screens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["width", "height"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "width": { "type": "integer", "minimum": 1 },
+              "height": { "type": "integer", "minimum": 1 }
+            },
+            "patternProperties": { "^_": {} },
+            "additionalProperties": false
+          }
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    }
+  }
+}

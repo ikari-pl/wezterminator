@@ -1,0 +1,177 @@
+{
+  "_": "Space-brick field with paddle-and-ball geometry over a starfield. Arkanoid-inspired; original procedural art, no trademarks.",
+  "schema_version": 1,
+  "id": "builtin:brickfield",
+  "name": "Brickfield",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#050510",
+      "surface": "#12122a",
+      "fg": "#e0e8ff",
+      "fg_dim": "#6870a0",
+      "accent": "#ff6060",
+      "accent_alt": "#40c0ff",
+      "ok": "#40e080",
+      "warn": "#f0c040",
+      "bad": "#ff4040",
+      "info": "#8080ff",
+      "tab_bar_bg": "#050510",
+      "tab_active_bg": "#12122a",
+      "tab_active_fg": "#40c0ff",
+      "tab_inactive_bg": "#050510",
+      "tab_inactive_fg": "#6870a0",
+      "tab_hover_bg": "#1a1a3a",
+      "tab_hover_fg": "#e0e8ff"
+    },
+    "scheme": {
+      "_": "Arcade neon on deep space.",
+      "foreground": "#d0d8f0",
+      "background": "#050510",
+      "cursor_bg": "#40c0ff",
+      "cursor_fg": "#050510",
+      "selection_bg": "#12122a",
+      "selection_fg": "#d0d8f0",
+      "ansi": [
+        "#050510",
+        "#ff4040",
+        "#40e080",
+        "#f0c040",
+        "#4060c0",
+        "#c040c0",
+        "#40c0ff",
+        "#8888a8"
+      ],
+      "brights": [
+        "#6870a0",
+        "#ff6060",
+        "#60ffA0",
+        "#ffe060",
+        "#8080ff",
+        "#e060e0",
+        "#80e0ff",
+        "#e0e8ff"
+      ]
+    }
+  },
+  "art": {
+    "seed": 1986,
+    "base_color": "#050510",
+    "layers": [
+      {
+        "id": "stars",
+        "primitive": "starfield",
+        "scale": 2,
+        "opacity": 0.5,
+        "parallax": { "vertical": 0.08, "horizontal": 0.04 },
+        "params": {
+          "count": 140,
+          "crosses": 6,
+          "colors": ["fg", "info", "accent_alt"],
+          "alpha": 160
+        }
+      },
+      {
+        "id": "field",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.4,
+        "parallax": { "vertical": 0.12, "horizontal": 0.2 },
+        "params": {
+          "cell": 28,
+          "chance": 22,
+          "sprites": [
+            {
+              "rows": ["RRRR", "RrRr", "RRRR"],
+              "colors": { "R": "accent", "r": "#c04040" }
+            },
+            {
+              "rows": ["OOOO", "OoOo", "OOOO"],
+              "colors": { "O": "warn", "o": "#c09030" }
+            },
+            {
+              "rows": ["CCCC", "CcCc", "CCCC"],
+              "colors": { "C": "accent_alt", "c": "#3080b0" }
+            },
+            {
+              "rows": ["MMMM", "MmMm", "MMMM"],
+              "colors": { "M": "#c040c0", "m": "#802080" }
+            },
+            {
+              "rows": ["GGGG", "GgGg", "GGGG"],
+              "colors": { "G": "ok", "g": "#208050" }
+            }
+          ]
+        }
+      },
+      {
+        "id": "paddle",
+        "primitive": "sprite_strip",
+        "scale": 4,
+        "opacity": 0.45,
+        "parallax": { "vertical": 0, "horizontal": 0.55 },
+        "params": {
+          "y": 88,
+          "gap": 24,
+          "offset": 8,
+          "order": "cycle",
+          "sprites": [
+            {
+              "rows": [
+                ".wwwwww.",
+                "wwWWWwwW",
+                ".wwwwww."
+              ],
+              "colors": { "w": "fg", "W": "accent_alt" }
+            }
+          ]
+        }
+      },
+      {
+        "id": "ball",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.5,
+        "parallax": { "vertical": 0.3, "horizontal": 0.4 },
+        "params": {
+          "cell": 40,
+          "chance": 18,
+          "sprite": {
+            "rows": [".#.", "###", ".#."],
+            "colors": { "#": "warn" }
+          }
+        }
+      },
+      {
+        "id": "haze",
+        "primitive": "vignette",
+        "scale": 4,
+        "opacity": 0.25,
+        "parallax": { "vertical": 0, "horizontal": 0 },
+        "params": {
+          "alpha": 140,
+          "color": "bg"
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#050510" },
+    {
+      "kind": "gradient",
+      "shape": "radial",
+      "colors": ["#12122a", "#050510"],
+      "opacity": 0.45
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": true },
+    "auto_scroll": { "enabled": false, "speed": 0 }
+  },
+  "legibility": {
+    "text": "#d0d8f0",
+    "dim_text": "#6870a0",
+    "min_contrast": 3.0
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "_": "The scheme part is one choice: a theme scheme or a named WezTerm scheme, never both.",
+  "name": "validate-overrides-scheme-both-selectors",
+  "kind": "validation",
+  "schema": "schema/preset.schema.json",
+  "def": "overrides_document",
+  "document": {
+    "schema_version": 1,
+    "parts": {"scheme": {"theme": "builtin:neon", "wezterm_scheme": "Gruvbox Dark"}}
+  },
+  "valid": false,
+  "error_path": "/parts/scheme"
+}

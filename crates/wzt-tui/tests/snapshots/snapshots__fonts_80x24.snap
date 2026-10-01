@@ -1,0 +1,27 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  fonts  ·  save:local-preset  ·  [/]:size  ·  c:correction  · 
+┌ Size ────────────────────────────────────────────────────────────────────────┐
+│ base size: 14.0 pt   preferred marked with *   ! = missing   p = polish gap  │
+└──────────────────────────────────────────────────────────────────────────────┘
+┌ Families ────────────────────────────────────────────────────────────────────┐
+│> *    Terminess Nerd Font Mono                                               │
+│  *!·· ProggyVector                              corr:+1.0                    │
+│     n Menlo                                                                  │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────
+wezterm preview

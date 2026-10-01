@@ -1,0 +1,27 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  chrome  ·  save:local-preset  ·  j/k:field  ·  [/]:adjust  · 
+┌ Chrome ──────────────────────────────────────────────────────────────────────┐
+│> opacity          1.00                                                       │
+│  blur             0                                                          │
+│  padding L/R/T/B  4/4/2/2                                                    │
+│  inactive sat/bri 0.90/-0.10                                                 │
+│  tab bar          top  hidden=false                                          │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────
+wezterm preview

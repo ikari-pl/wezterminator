@@ -1,0 +1,208 @@
+{
+  "_": "State names a local preset that no longer exists. The engine falls back to the default built-in preset and records a notice (the engine shows it as a toast). The state file itself is not rewritten by resolution.",
+  "name": "resolve-missing-active-preset",
+  "kind": "resolution",
+  "covers": ["missing-active-preset"],
+  "input": {
+    "engine": {"supported_schema_version": 1, "default_preset": "builtin:neon-night"},
+    "layers": {
+      "builtin": {
+        "presets": [
+          {
+            "schema_version": 1,
+            "id": "builtin:neon-night",
+            "name": "Neon Night",
+            "based_on": null,
+            "parts": {
+              "art": {"theme": "builtin:neon"},
+              "scheme": {"theme": "builtin:neon"},
+              "palette": {"theme": "builtin:neon"},
+              "font": {"preferred": ["Terminess Nerd Font"], "fallback": ["JetBrains Mono", "Menlo"]},
+              "chrome": {"opacity": 1},
+              "status": {"style": "sparkline", "segments": ["load", "memory", "clock"]},
+              "motion": {"scrollback_parallax": false}
+            }
+          },
+          {
+            "schema_version": 1,
+            "id": "builtin:dusk-calm",
+            "name": "Dusk Calm",
+            "based_on": null,
+            "parts": {
+              "art": {"theme": "builtin:dusk"},
+              "scheme": {"wezterm_scheme": "Gruvbox Dark"},
+              "palette": {"theme": "builtin:dusk"},
+              "font": {"preferred": ["Terminess Nerd Font"], "fallback": ["JetBrains Mono", "Menlo"]},
+              "chrome": {"opacity": 0.95, "blur": 10},
+              "status": {"style": "pill", "segments": ["cwd", "clock"]},
+              "motion": {}
+            }
+          }
+        ],
+        "themes": [
+          {
+            "schema_version": 1,
+            "id": "builtin:neon",
+            "name": "Neon",
+            "variant": "dark",
+            "palette": {
+              "ui": {
+                "bg": "#0a0a12",
+                "surface": "#14141f",
+                "fg": "#e0e0e0",
+                "fg_dim": "#7a7a8c",
+                "accent": "#00ff9c",
+                "ok": "#00cc66",
+                "warn": "#ffaa00",
+                "bad": "#ff4455",
+                "info": "#33aaff",
+                "tab_bar_bg": "#0a0a12",
+                "tab_active_bg": "#14141f",
+                "tab_active_fg": "#00ff9c",
+                "tab_inactive_bg": "#0a0a12",
+                "tab_inactive_fg": "#7a7a8c"
+              },
+              "scheme": {
+                "foreground": "#e0e0e0",
+                "background": "#0a0a12",
+                "cursor_bg": "#00ff9c",
+                "cursor_fg": "#0a0a12",
+                "selection_bg": "#2a2a40",
+                "selection_fg": "#e0e0e0",
+                "ansi": [
+                  "#0a0a12",
+                  "#ff4455",
+                  "#00cc66",
+                  "#ffaa00",
+                  "#3366ff",
+                  "#cc44ff",
+                  "#33aaff",
+                  "#e0e0e0"
+                ],
+                "brights": [
+                  "#444466",
+                  "#ff7788",
+                  "#44ee99",
+                  "#ffcc55",
+                  "#6699ff",
+                  "#dd77ff",
+                  "#77ccff",
+                  "#ffffff"
+                ]
+              }
+            },
+            "art": {
+              "seed": 7,
+              "base_color": "#0a0a12",
+              "layers": [
+                {
+                  "id": "stars",
+                  "primitive": "starfield",
+                  "scale": 2,
+                  "opacity": 0.5,
+                  "parallax": {"vertical": 0.2, "horizontal": 0},
+                  "params": {"count": 80}
+                },
+                {
+                  "id": "grid",
+                  "primitive": "perspective_grid",
+                  "scale": 3,
+                  "opacity": 0.8,
+                  "parallax": {"vertical": 0.5}
+                }
+              ]
+            },
+            "fallback_layers": [{"kind": "color", "color": "#0a0a12"}],
+            "legibility": {"text": "#e0e0e0", "dim_text": "#7a7a8c"},
+            "motion": {
+              "scrollback_parallax": true,
+              "alt_wheel_scroll": {"vertical": true, "horizontal": false},
+              "auto_scroll": {"enabled": false, "speed": 0}
+            }
+          },
+          {
+            "schema_version": 1,
+            "id": "builtin:dusk",
+            "name": "Dusk",
+            "variant": "dark",
+            "palette": {
+              "ui": {
+                "bg": "#0a0a12",
+                "surface": "#14141f",
+                "fg": "#e0e0e0",
+                "fg_dim": "#7a7a8c",
+                "accent": "#ff8800",
+                "ok": "#00cc66",
+                "warn": "#ffaa00",
+                "bad": "#ff4455",
+                "info": "#33aaff",
+                "tab_bar_bg": "#0a0a12",
+                "tab_active_bg": "#14141f",
+                "tab_active_fg": "#ff8800",
+                "tab_inactive_bg": "#0a0a12",
+                "tab_inactive_fg": "#7a7a8c"
+              },
+              "scheme": {
+                "foreground": "#e0e0e0",
+                "background": "#0a0a12",
+                "cursor_bg": "#ff8800",
+                "cursor_fg": "#0a0a12",
+                "selection_bg": "#2a2a40",
+                "selection_fg": "#e0e0e0",
+                "ansi": [
+                  "#0a0a12",
+                  "#ff4455",
+                  "#00cc66",
+                  "#ffaa00",
+                  "#3366ff",
+                  "#cc44ff",
+                  "#33aaff",
+                  "#e0e0e0"
+                ],
+                "brights": [
+                  "#444466",
+                  "#ff7788",
+                  "#44ee99",
+                  "#ffcc55",
+                  "#6699ff",
+                  "#dd77ff",
+                  "#77ccff",
+                  "#ffffff"
+                ]
+              }
+            },
+            "art": {
+              "seed": 7,
+              "base_color": "#0a0a12",
+              "layers": [
+                {
+                  "id": "haze",
+                  "primitive": "dither_wash",
+                  "scale": 2,
+                  "opacity": 0.4,
+                  "parallax": {"vertical": 0.1}
+                }
+              ]
+            },
+            "fallback_layers": [{"kind": "color", "color": "#0a0a12"}],
+            "legibility": {"text": "#e0e0e0", "dim_text": "#7a7a8c"}
+          }
+        ],
+        "overrides": null,
+        "machine": null
+      },
+      "fleet": null,
+      "local": null
+    },
+    "state": {"schema_version": 1, "active_preset": "local:gone", "history": []},
+    "environment": {"installed_fonts": null},
+    "addon": null
+  },
+  "expected": {
+    "active": {"requested": "local:gone", "id": "builtin:neon-night", "fell_back": true},
+    "notices": [{"code": "active_preset_missing", "requested": "local:gone", "used": "builtin:neon-night"}],
+    "ignored": [],
+    "error": null
+  },
+  "expect_at": {"/resolved/id": "builtin:neon-night"}
+}

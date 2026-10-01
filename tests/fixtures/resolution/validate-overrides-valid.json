@@ -1,0 +1,12 @@
+{
+  "_": "A partial-parts overrides document (needs no font fallback, art theme or status style).",
+  "name": "validate-overrides-valid",
+  "kind": "validation",
+  "schema": "schema/preset.schema.json",
+  "def": "overrides_document",
+  "document": {
+    "schema_version": 1,
+    "parts": {"chrome": {"opacity": 0.9}, "art": {"layer_tweaks": {"stars": {"opacity": 0.3}}}}
+  },
+  "valid": true
+}

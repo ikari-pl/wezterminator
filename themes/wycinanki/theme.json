@@ -1,0 +1,166 @@
+{
+  "_": "Łowicz paper-cut folk motifs on black, in saturated folk colours. Original art; no trademarked names.",
+  "schema_version": 1,
+  "id": "builtin:wycinanki",
+  "name": "Wycinanki",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#0a0a0a",
+      "surface": "#1a1014",
+      "fg": "#f0e8d8",
+      "fg_dim": "#988878",
+      "accent": "#e02020",
+      "accent_alt": "#20a040",
+      "ok": "#20a040",
+      "warn": "#f0c020",
+      "bad": "#e02020",
+      "info": "#2080d0",
+      "tab_bar_bg": "#0a0a0a",
+      "tab_active_bg": "#1a1014",
+      "tab_active_fg": "#f0c020",
+      "tab_inactive_bg": "#0a0a0a",
+      "tab_inactive_fg": "#988878",
+      "tab_hover_bg": "#2a1820",
+      "tab_hover_fg": "#f0e8d8"
+    },
+    "scheme": {
+      "_": "Saturated Łowicz folk colours on black.",
+      "foreground": "#f0e8d8",
+      "background": "#0a0a0a",
+      "cursor_bg": "#f0c020",
+      "cursor_fg": "#0a0a0a",
+      "selection_bg": "#2a1820",
+      "selection_fg": "#f0e8d8",
+      "ansi": [
+        "#0a0a0a",
+        "#e02020",
+        "#20a040",
+        "#f0c020",
+        "#2080d0",
+        "#d040a0",
+        "#30b0a0",
+        "#a09080"
+      ],
+      "brights": [
+        "#988878",
+        "#ff4040",
+        "#40c060",
+        "#ffe040",
+        "#40a0f0",
+        "#f060c0",
+        "#50d0c0",
+        "#f0e8d8"
+      ]
+    }
+  },
+  "art": {
+    "seed": 1860,
+    "base_color": "#0a0a0a",
+    "layers": [
+      {
+        "id": "skyline",
+        "primitive": "silhouette_bands",
+        "scale": 4,
+        "opacity": 0.22,
+        "parallax": { "vertical": 0.2, "horizontal": 0 },
+        "params": {
+          "bands": 3,
+          "feature": 48,
+          "alpha": 160,
+          "colors": ["#d040a0", "accent", "accent_alt"]
+        }
+      },
+      {
+        "id": "rosettes",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.45,
+        "parallax": { "vertical": 0.08, "horizontal": 0.03 },
+        "params": {
+          "cell": 36,
+          "chance": 12,
+          "sprites": [
+            {
+              "rows": [
+                "..y..",
+                ".rrr.",
+                "rgGgr",
+                ".rrr.",
+                "..y.."
+              ],
+              "colors": {
+                "r": "accent",
+                "g": "accent_alt",
+                "G": "#30b0a0",
+                "y": "warn"
+              }
+            },
+            {
+              "rows": [
+                ".b.b.",
+                "b.p.b",
+                ".pYp.",
+                "b.p.b",
+                ".b.b."
+              ],
+              "colors": {
+                "b": "info",
+                "p": "#d040a0",
+                "Y": "warn"
+              }
+            },
+            {
+              "rows": [
+                "..r..",
+                ".ygy.",
+                "rgGgr",
+                ".ygy.",
+                "..r.."
+              ],
+              "colors": {
+                "r": "accent",
+                "y": "warn",
+                "g": "accent_alt",
+                "G": "#40c060"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "edge",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.1,
+        "parallax": { "vertical": 0, "horizontal": 0 },
+        "params": {
+          "direction": "edges",
+          "colors": ["surface"],
+          "alpha": 80,
+          "strength": 40
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#0a0a0a" },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": ["#0a0a0a", "#1a1014"],
+      "opacity": 0.4
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+    "auto_scroll": { "enabled": false, "speed": 0 }
+  },
+  "legibility": {
+    "text": "#f0e8d8",
+    "dim_text": "#988878",
+    "min_contrast": 3.0
+  }
+}

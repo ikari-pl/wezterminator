@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "builtin:isoville",
+  "name": "Isoville",
+  "based_on": null,
+  "parts": {
+    "art": { "theme": "builtin:isoville" },
+    "scheme": { "theme": "builtin:isoville" },
+    "palette": { "theme": "builtin:isoville" },
+    "font": {
+      "preferred": ["IBM Plex Mono", "GeistMono Nerd Font"],
+      "fallback": ["FiraCode Nerd Font Mono", "JetBrains Mono", "Menlo"],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 1.0,
+      "padding": { "left": 8, "right": 8, "top": 6, "bottom": 6 }
+    },
+    "status": {
+      "style": "pill",
+      "segments": ["cwd", "battery", "clock", "workspace"]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": { "vertical": true, "horizontal": true },
+      "auto_scroll": { "enabled": true, "speed": 6, "axis": "horizontal" }
+    }
+  }
+}

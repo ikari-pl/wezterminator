@@ -1,0 +1,28 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  author  ·  1:theme 2:palette 3:art 4:import  ·  s:save  ·  es
+ tab: palette   theme: Untitled                                                 
+┌ Palette (! = below contrast; save still allowed) ────────────────────────────┐
+│>   bg                  #0c0c18                                               │
+│    fg                  #e0e0f0                                               │
+│    fg_dim              #686878                                               │
+│    accent              #40c0ff                                               │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+┌ Contrast readout ────────────────────────────────────────────────────────────┐
+│contrast: ok                                                                  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────
+wezterm preview

@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "wezterminator preset",
+  "description": "A preset names one choice per theme part. Saved presets are full snapshots with based_on metadata, never diffs. The same file also defines $defs/overrides_document (a partial-parts tweak file per layer) and the part and id definitions shared by theme.schema.json and state.schema.json. Keys starting with an underscore are comments: '_' describes the enclosing object, '_<key>' describes the sibling '<key>'.",
+  "type": "object",
+  "required": ["schema_version", "id", "name", "based_on", "parts"],
+  "properties": {
+    "schema_version": { "$ref": "#/$defs/schema_version" },
+    "id": { "$ref": "#/$defs/preset_id" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "based_on": {
+      "description": "Id of the preset this was snapshotted from, or null for an original. The parent may no longer exist.",
+      "oneOf": [{ "$ref": "#/$defs/preset_id" }, { "type": "null" }]
+    },
+    "parts": { "$ref": "#/$defs/parts" }
+  },
+  "patternProperties": { "^_": {} },
+  "additionalProperties": false,
+  "$defs": {
+    "schema_version": {
+      "description": "Version 1 of this schema. Future versions ship as new schema files; the engine gates documents on this integer before reading anything else.",
+      "const": 1
+    },
+    "preset_id": {
+      "description": "Namespaced preset id. The namespace must match the layer the file lives in.",
+      "type": "string",
+      "pattern": "^(builtin|fleet|local):[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "theme_id": {
+      "description": "Namespaced theme id. The slug matches the theme directory name.",
+      "type": "string",
+      "pattern": "^(builtin|fleet|local):[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "slug": {
+      "description": "Identifier used as a map key. Never starts with an underscore.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "unit_interval": { "type": "number", "minimum": 0, "maximum": 1 },
+    "parallax": {
+      "description": "Parallax factors for one layer. 0 pins the layer, 1 moves it with the text.",
+      "type": "object",
+      "properties": {
+        "vertical": { "type": "number", "minimum": 0, "maximum": 2 },
+        "horizontal": { "type": "number", "minimum": 0, "maximum": 2 }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "layer_tweak": {
+      "description": "Per-layer adjustment applied over a theme's layer of the same id.",
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "opacity": { "$ref": "#/$defs/unit_interval" },
+        "parallax": { "$ref": "#/$defs/parallax" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+
+    "art_part": {
+      "description": "Background art: which theme's layer stack to use, plus per-layer tweaks keyed by layer id.",
+      "type": "object",
+      "properties": {
+        "theme": { "$ref": "#/$defs/theme_id" },
+        "layer_tweaks": {
+          "type": "object",
+          "patternProperties": {
+            "^_": {},
+            "^[a-z0-9]": { "$ref": "#/$defs/layer_tweak" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "scheme_part": {
+      "description": "Terminal colour scheme. Either a theme's own scheme or a named WezTerm scheme. Atomic: a layer that sets it replaces the whole part.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["theme"],
+          "properties": { "theme": { "$ref": "#/$defs/theme_id" } },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["wezterm_scheme"],
+          "properties": { "wezterm_scheme": { "type": "string", "minLength": 1 } },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "palette_part": {
+      "description": "UI palette (tab bar and status colours), taken from a theme.",
+      "type": "object",
+      "properties": { "theme": { "$ref": "#/$defs/theme_id" } },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "font_part": {
+      "description": "Font choice. 'preferred' are tried first when installed. 'fallback' is the preset's declared fallback list, always appended (R7).",
+      "type": "object",
+      "properties": {
+        "preferred": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "fallback": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "size": { "type": "number", "exclusiveMinimum": 0 },
+        "corrections": {
+          "description": "Per-font size correction in points, added to the base size. Keyed by font family name.",
+          "type": "object",
+          "patternProperties": {
+            "^_": {},
+            "^[^_]": { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "chrome_part": {
+      "description": "Window chrome. Options the platform lacks are reported unavailable by the engine, not rejected here.",
+      "type": "object",
+      "properties": {
+        "opacity": { "$ref": "#/$defs/unit_interval" },
+        "blur": { "type": "integer", "minimum": 0 },
+        "padding": {
+          "type": "object",
+          "properties": {
+            "left": { "type": "integer", "minimum": 0 },
+            "right": { "type": "integer", "minimum": 0 },
+            "top": { "type": "integer", "minimum": 0 },
+            "bottom": { "type": "integer", "minimum": 0 }
+          },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        },
+        "inactive_pane": {
+          "type": "object",
+          "properties": {
+            "saturation": { "type": "number", "minimum": 0 },
+            "brightness": { "type": "number", "minimum": 0 }
+          },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        },
+        "tab_bar": {
+          "type": "object",
+          "properties": {
+            "position": { "enum": ["top", "bottom"] },
+            "hidden": { "type": "boolean" }
+          },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "status_part": {
+      "description": "Status bar style and ordered segment list.",
+      "type": "object",
+      "properties": {
+        "style": { "enum": ["sparkline", "pill"] },
+        "segments": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "load",
+              "memory",
+              "memory_pressure",
+              "tailscale",
+              "warp",
+              "tunnels",
+              "aws_vpn",
+              "cwd",
+              "font",
+              "battery",
+              "exit_code",
+              "clock",
+              "workspace"
+            ]
+          },
+          "uniqueItems": true
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "motion": {
+      "description": "Motion settings. Themes carry these as defaults; presets and overrides win field by field.",
+      "type": "object",
+      "properties": {
+        "scrollback_parallax": { "type": "boolean" },
+        "alt_wheel_scroll": {
+          "type": "object",
+          "properties": {
+            "vertical": { "type": "boolean" },
+            "horizontal": { "type": "boolean" }
+          },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        },
+        "auto_scroll": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "speed": { "type": "number", "minimum": 0, "description": "Pixels per tick." },
+            "axis": { "enum": ["vertical", "horizontal"] }
+          },
+          "patternProperties": { "^_": {} },
+          "additionalProperties": false
+        }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+
+    "parts": {
+      "type": "object",
+      "required": ["art", "scheme", "palette", "font", "chrome", "status", "motion"],
+      "properties": {
+        "art": { "allOf": [{ "$ref": "#/$defs/art_part" }, { "required": ["theme"] }] },
+        "scheme": { "$ref": "#/$defs/scheme_part" },
+        "palette": { "allOf": [{ "$ref": "#/$defs/palette_part" }, { "required": ["theme"] }] },
+        "font": { "allOf": [{ "$ref": "#/$defs/font_part" }, { "required": ["preferred", "fallback"] }] },
+        "chrome": { "$ref": "#/$defs/chrome_part" },
+        "status": { "allOf": [{ "$ref": "#/$defs/status_part" }, { "required": ["style", "segments"] }] },
+        "motion": { "$ref": "#/$defs/motion" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+    "partial_parts": {
+      "description": "Same shape as parts with every part and field optional. 'scheme' stays atomic.",
+      "type": "object",
+      "properties": {
+        "art": { "$ref": "#/$defs/art_part" },
+        "scheme": { "$ref": "#/$defs/scheme_part" },
+        "palette": { "$ref": "#/$defs/palette_part" },
+        "font": { "$ref": "#/$defs/font_part" },
+        "chrome": { "$ref": "#/$defs/chrome_part" },
+        "status": { "$ref": "#/$defs/status_part" },
+        "motion": { "$ref": "#/$defs/motion" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    },
+
+    "overrides_document": {
+      "description": "overrides.json in the fleet or local layer. Tweaks that follow the user across presets. Merged over the active preset's parts before themes are expanded.",
+      "type": "object",
+      "required": ["schema_version", "parts"],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/schema_version" },
+        "parts": { "$ref": "#/$defs/partial_parts" }
+      },
+      "patternProperties": { "^_": {} },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "_": "issue_url_pattern must contain the {key} placeholder.",
+  "name": "validate-machine-bad-issue-pattern",
+  "kind": "validation",
+  "schema": "schema/machine.schema.json",
+  "document": {"schema_version": 1, "issue_url_pattern": "https://issues.example.test/browse/"},
+  "valid": false,
+  "error_path": "/issue_url_pattern"
+}

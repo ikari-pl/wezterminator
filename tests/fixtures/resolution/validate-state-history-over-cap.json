@@ -1,0 +1,35 @@
+{
+  "_": "The undo history is capped at 20 entries.",
+  "name": "validate-state-history-over-cap",
+  "kind": "validation",
+  "schema": "schema/state.schema.json",
+  "document": {
+    "schema_version": 1,
+    "active_preset": "builtin:neon-night",
+    "history": [
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:00:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:01:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:02:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:03:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:04:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:05:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:06:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:07:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:08:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:09:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:10:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:11:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:12:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:13:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:14:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:15:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:16:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:17:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:18:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:19:00Z"},
+      {"preset": "builtin:dusk-calm", "at": "2026-10-01T10:20:00Z"}
+    ]
+  },
+  "valid": false,
+  "error_path": "/history"
+}

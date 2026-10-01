@@ -1,0 +1,52 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/wzt-model",
+    "crates/wzt-stats",
+    "crates/wzt-art",
+    "crates/wzt-fonts",
+    "crates/wzt-ops",
+    "crates/wzt-preview",
+    "crates/wzt-tui",
+    "crates/wezterminator",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.93"
+publish = false
+license = "MIT"
+
+[workspace.dependencies]
+base64 = "0.22"
+blake3 = "1"
+clap = { version = "4", features = ["derive"] }
+etcetera = "0.11"
+fontique = "0.11"
+# Decoding only: wzt-art reads source images for import and writes PNGs through `png`.
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif"] }
+insta = "1"
+png = "0.18"
+ratatui = "0.30"
+rayon = "1"
+rustix = { version = "1", default-features = false, features = ["event", "fs", "std"] }
+serde = { version = "1", features = ["derive"] }
+# preserve_order keeps object key order stable through read and write, so
+# hand-edited files diff cleanly after the TUI rewrites them.
+serde_json = { version = "1", features = ["preserve_order"] }
+skrifa = "0.47"
+tempfile = "3"
+thiserror = "2"
+tiny_http = "0.12"
+
+wzt-art = { path = "crates/wzt-art" }
+wzt-fonts = { path = "crates/wzt-fonts" }
+wzt-model = { path = "crates/wzt-model" }
+wzt-ops = { path = "crates/wzt-ops" }
+wzt-preview = { path = "crates/wzt-preview" }
+wzt-stats = { path = "crates/wzt-stats" }
+wzt-tui = { path = "crates/wzt-tui" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"

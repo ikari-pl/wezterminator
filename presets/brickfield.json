@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "builtin:brickfield",
+  "name": "Brickfield",
+  "based_on": null,
+  "parts": {
+    "art": { "theme": "builtin:brickfield" },
+    "scheme": { "theme": "builtin:brickfield" },
+    "palette": { "theme": "builtin:brickfield" },
+    "font": {
+      "preferred": ["Terminess Nerd Font Mono", "ProggyVector"],
+      "fallback": ["FiraCode Nerd Font Mono", "JetBrains Mono", "Menlo"],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 1.0,
+      "padding": { "left": 6, "right": 6, "top": 4, "bottom": 4 }
+    },
+    "status": {
+      "style": "sparkline",
+      "segments": ["load", "memory", "battery", "cwd", "clock"]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": { "vertical": true, "horizontal": true },
+      "auto_scroll": { "enabled": false, "speed": 0 }
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "_": "Bioluminescent deep sea: caustics, drifting plankton, jellyfish glows; teal with magenta and coral.",
+  "_palette": "Teal with magenta and coral accents.",
+  "schema_version": 1,
+  "id": "builtin:abyssal",
+  "name": "Abyssal",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "_": "Semantic keys only.",
+      "bg": "#020812",
+      "surface": "#0a1830",
+      "fg": "#5eead4",
+      "fg_dim": "#4a7888",
+      "accent": "#2dd4bf",
+      "accent_alt": "#e879f9",
+      "ok": "#2dd4bf",
+      "warn": "#fb7185",
+      "bad": "#f43f5e",
+      "info": "#67e8f9",
+      "tab_bar_bg": "#020812",
+      "tab_active_bg": "#0a1830",
+      "tab_active_fg": "#5eead4",
+      "tab_inactive_bg": "#020812",
+      "tab_inactive_fg": "#4a7888",
+      "tab_hover_bg": "#122440",
+      "tab_hover_fg": "#67e8f9"
+    },
+    "scheme": {
+      "_": "Deep-sea terminal: teal, magenta, coral on abyss.",
+      "foreground": "#b8e8e0",
+      "background": "#020812",
+      "cursor_bg": "#2dd4bf",
+      "cursor_fg": "#020812",
+      "selection_bg": "#0a1830",
+      "selection_fg": "#b8e8e0",
+      "ansi": [
+        "#020812",
+        "#f43f5e",
+        "#2dd4bf",
+        "#fb7185",
+        "#0e7490",
+        "#e879f9",
+        "#22d3ee",
+        "#7a9aa0"
+      ],
+      "brights": [
+        "#4a7888",
+        "#fb7185",
+        "#5eead4",
+        "#fda4af",
+        "#67e8f9",
+        "#f0abfc",
+        "#a5f3fc",
+        "#e0f7f4"
+      ]
+    }
+  },
+  "art": {
+    "seed": 2026,
+    "base_color": "#020812",
+    "layers": [
+      {
+        "id": "jellyfish",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.12,
+        "parallax": { "vertical": 0.06, "horizontal": 0.02 },
+        "params": {
+          "blob_count": 7,
+          "ramp": ["surface", "accent", "accent_alt"],
+          "alpha": 90,
+          "threshold": 6,
+          "spread": 110
+        }
+      },
+      {
+        "id": "coral_glow",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.06,
+        "parallax": { "vertical": 0.1, "horizontal": 0.04 },
+        "params": {
+          "blob_count": 4,
+          "ramp": ["warn", "bad"],
+          "alpha": 90,
+          "threshold": 12,
+          "spread": 80
+        }
+      },
+      {
+        "id": "plankton",
+        "primitive": "starfield",
+        "scale": 2,
+        "opacity": 0.5,
+        "parallax": { "vertical": 0.15, "horizontal": 0.05 },
+        "params": {
+          "count": 220,
+          "crosses": 8,
+          "colors": ["info", "accent", "accent_alt"],
+          "alpha": 180
+        }
+      },
+      {
+        "id": "caustics",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.08,
+        "parallax": { "vertical": 0.04, "horizontal": 0 },
+        "params": {
+          "direction": "top",
+          "colors": ["accent", "info"],
+          "alpha": 80,
+          "strength": 40
+        }
+      },
+      {
+        "id": "depth",
+        "primitive": "vignette",
+        "scale": 4,
+        "opacity": 0.3,
+        "parallax": { "vertical": 0, "horizontal": 0 },
+        "params": {
+          "alpha": 140,
+          "color": "bg"
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#020812" },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": ["#020812", "#0a1830"],
+      "opacity": 0.5
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+    "auto_scroll": { "enabled": false, "speed": 0 }
+  },
+  "legibility": {
+    "text": "#b8e8e0",
+    "dim_text": "#4a7888",
+    "min_contrast": 3.0
+  }
+}

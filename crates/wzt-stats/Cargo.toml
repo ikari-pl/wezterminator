@@ -1,0 +1,17 @@
+[package]
+name = "wzt-stats"
+description = "wezterminator stats collector: one key=value line for the WezTerm status bar"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde_json.workspace = true
+wzt-model.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[lints]
+workspace = true

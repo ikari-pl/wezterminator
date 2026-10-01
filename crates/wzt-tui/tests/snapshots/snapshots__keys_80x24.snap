@@ -1,0 +1,28 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  keys  ·  CONFLICT — fix before save  ·  r:rebind  ·  s:save  
+┌ Bindings ────────────────────────────────────────────────────────────────────┐
+│> !palette                 PRIMARY             p                 → palette    │
+│  !launcher                PRIMARY             p                 → launcher   │
+│   project-picker          PRIMARY|SHIFT       O                 → project_pic│
+│   workspace-switcher      PRIMARY|SHIFT       S                 → workspace_s│
+│   workspace-prev          PRIMARY|SHIFT       LeftArrow         → workspace_p│
+│   workspace-next          PRIMARY|SHIFT       RightArrow        → workspace_n│
+│   font-picker             CTRL|SHIFT          F                 → pick_font  │
+│   scheme-picker           CTRL|SHIFT          T                 → pick_scheme│
+│   preset-undo             CTRL|SHIFT          Backspace         → preset_undo│
+│   preset-next             CTRL|SHIFT          RightArrow        → preset_next│
+│   preset-prev             CTRL|SHIFT          LeftArrow         → preset_prev│
+│   background-pause        CTRL|SHIFT          G                 → toggle_paus│
+│   parallax-toggle         CTRL|SHIFT          B                 → toggle_para│
+│   parallax-recenter       CTRL|SHIFT|ALT      B                 → recenter_pa│
+│   split-right             PRIMARY             d                 → split_right│
+└──────────────────────────────────────────────────────────────────────────────┘
+┌ Conflicts (shown before save) ───────────────────────────────────────────────┐
+│launcher: chord PRIMARY:p also used by palette                                │
+│palette: chord PRIMARY:p also used by launcher                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────
+wezterm preview

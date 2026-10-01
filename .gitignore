@@ -5,3 +5,10 @@
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+# Personal snapshots of the original configs live outside this public tree
+# (see ~/src/wezterminator-private/sources). Kept ignored in case they reappear.
+sources/
+
+# Cargo build output
+/target/

@@ -1,0 +1,23 @@
+{
+  "_": "Schema version 1 accepts only schema_version 1. Newer documents are gated by the engine before validation.",
+  "name": "validate-preset-future-version",
+  "kind": "validation",
+  "schema": "schema/preset.schema.json",
+  "document": {
+    "schema_version": 2,
+    "id": "builtin:neon-night",
+    "name": "Neon Night",
+    "based_on": null,
+    "parts": {
+      "art": {"theme": "builtin:neon"},
+      "scheme": {"theme": "builtin:neon"},
+      "palette": {"theme": "builtin:neon"},
+      "font": {"preferred": ["Terminess Nerd Font"], "fallback": ["JetBrains Mono", "Menlo"]},
+      "chrome": {"opacity": 1},
+      "status": {"style": "sparkline", "segments": ["load", "memory", "clock"]},
+      "motion": {"scrollback_parallax": false}
+    }
+  },
+  "valid": false,
+  "error_path": "/schema_version"
+}

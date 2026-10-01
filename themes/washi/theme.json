@@ -1,0 +1,144 @@
+{
+  "_": "Only light theme: paper fibre, sumi-ink washes, vermilion stamp; dark ink text on light paper.",
+  "schema_version": 1,
+  "id": "builtin:washi",
+  "name": "Washi",
+  "variant": "light",
+  "palette": {
+    "ui": {
+      "bg": "#f4efe4",
+      "surface": "#e8e0d0",
+      "fg": "#1a1814",
+      "fg_dim": "#6a6458",
+      "accent": "#c23b22",
+      "accent_alt": "#8b7355",
+      "ok": "#4a6a40",
+      "warn": "#b07020",
+      "bad": "#c23b22",
+      "info": "#3a5a70",
+      "tab_bar_bg": "#efe8da",
+      "tab_active_bg": "#e8e0d0",
+      "tab_active_fg": "#1a1814",
+      "tab_inactive_bg": "#f4efe4",
+      "tab_inactive_fg": "#6a6458",
+      "tab_hover_bg": "#ddd4c4",
+      "tab_hover_fg": "#1a1814"
+    },
+    "scheme": {
+      "_": "Light paper terminal: sumi ink on washi.",
+      "foreground": "#1a1814",
+      "background": "#f4efe4",
+      "cursor_bg": "#c23b22",
+      "cursor_fg": "#f4efe4",
+      "selection_bg": "#d8d0c0",
+      "selection_fg": "#1a1814",
+      "ansi": [
+        "#2a2824",
+        "#c23b22",
+        "#4a6a40",
+        "#b07020",
+        "#3a5a70",
+        "#7a4060",
+        "#4a6870",
+        "#c8c0b0"
+      ],
+      "brights": [
+        "#6a6458",
+        "#e05040",
+        "#6a8a58",
+        "#d09040",
+        "#5a7a90",
+        "#9a6080",
+        "#6a8890",
+        "#1a1814"
+      ]
+    }
+  },
+  "art": {
+    "seed": 794,
+    "base_color": "#f4efe4",
+    "layers": [
+      {
+        "id": "fibre",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.15,
+        "parallax": { "vertical": 0.01, "horizontal": 0 },
+        "params": {
+          "direction": "edges",
+          "colors": ["surface", "accent_alt"],
+          "alpha": 50,
+          "strength": 35
+        }
+      },
+      {
+        "id": "sumi",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.1,
+        "parallax": { "vertical": 0.04, "horizontal": 0.01 },
+        "params": {
+          "blob_count": 5,
+          "ramp": ["fg_dim", "fg"],
+          "alpha": 55,
+          "threshold": 15,
+          "spread": 130
+        }
+      },
+      {
+        "id": "wash",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.08,
+        "parallax": { "vertical": 0.02, "horizontal": 0 },
+        "params": {
+          "direction": "bottom",
+          "colors": ["accent_alt", "fg_dim"],
+          "alpha": 45,
+          "strength": 30
+        }
+      },
+      {
+        "id": "stamp",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.45,
+        "parallax": { "vertical": 0.02, "horizontal": 0.02 },
+        "params": {
+          "cell": 48,
+          "chance": 8,
+          "sprite": {
+            "rows": [
+              ".###.",
+              "#...#",
+              "#.#.#",
+              "#...#",
+              ".###."
+            ],
+            "colors": { "#": "accent" }
+          }
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#f4efe4" },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": ["#f4efe4", "#e8e0d0"],
+      "opacity": 0.4
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+    "auto_scroll": { "enabled": false, "speed": 0 }
+  },
+  "legibility": {
+    "text": "#1a1814",
+    "dim_text": "#6a6458",
+    "min_contrast": 3.0
+  }
+}

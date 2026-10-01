@@ -1,0 +1,23 @@
+{
+  "_": "The font part must declare fallback fonts (R7).",
+  "name": "validate-preset-missing-fallback-font",
+  "kind": "validation",
+  "schema": "schema/preset.schema.json",
+  "document": {
+    "schema_version": 1,
+    "id": "builtin:neon-night",
+    "name": "Neon Night",
+    "based_on": null,
+    "parts": {
+      "art": {"theme": "builtin:neon"},
+      "scheme": {"theme": "builtin:neon"},
+      "palette": {"theme": "builtin:neon"},
+      "font": {"preferred": ["Terminess Nerd Font"]},
+      "chrome": {"opacity": 1},
+      "status": {"style": "sparkline", "segments": ["load", "memory", "clock"]},
+      "motion": {"scrollback_parallax": false}
+    }
+  },
+  "valid": false,
+  "error_path": "/parts/font"
+}

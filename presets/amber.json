@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "builtin:amber",
+  "name": "Amber",
+  "based_on": null,
+  "parts": {
+    "art": { "theme": "builtin:amber" },
+    "scheme": { "theme": "builtin:amber" },
+    "palette": { "theme": "builtin:amber" },
+    "font": {
+      "preferred": ["Terminess Nerd Font Mono", "ProggyVector"],
+      "fallback": ["FiraCode Nerd Font Mono", "JetBrains Mono", "Menlo"],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 1.0,
+      "padding": { "left": 4, "right": 4, "top": 2, "bottom": 2 }
+    },
+    "status": {
+      "style": "sparkline",
+      "segments": ["load", "memory", "memory_pressure", "battery", "cwd", "clock"]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+      "auto_scroll": { "enabled": false, "speed": 0 }
+    }
+  }
+}

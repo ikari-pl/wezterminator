@@ -1,0 +1,159 @@
+{
+  "_": "Amber P3 phosphor CRT companion to Phosphor: warm tube glow, scanlines, bloom and vignette.",
+  "schema_version": 1,
+  "id": "builtin:amber",
+  "name": "Amber",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#100804",
+      "surface": "#1c1008",
+      "fg": "#ffb040",
+      "fg_dim": "#906830",
+      "accent": "#ffb040",
+      "accent_alt": "#ffd080",
+      "ok": "#c0a040",
+      "warn": "#ff8040",
+      "bad": "#ff4040",
+      "info": "#e0a060",
+      "tab_bar_bg": "#100804",
+      "tab_active_bg": "#1c1008",
+      "tab_active_fg": "#ffb040",
+      "tab_inactive_bg": "#100804",
+      "tab_inactive_fg": "#906830",
+      "tab_hover_bg": "#1c1008",
+      "tab_hover_fg": "#ffd080"
+    },
+    "scheme": {
+      "_": "Amber P3 phosphor terminal colours.",
+      "foreground": "#e8d0a0",
+      "background": "#100804",
+      "cursor_bg": "#ffb040",
+      "cursor_fg": "#100804",
+      "selection_bg": "#1c1008",
+      "selection_fg": "#e8d0a0",
+      "ansi": [
+        "#100804",
+        "#cc4040",
+        "#a08030",
+        "#ffb040",
+        "#805020",
+        "#c06040",
+        "#c08040",
+        "#b09870"
+      ],
+      "brights": [
+        "#906830",
+        "#ff6060",
+        "#c0a050",
+        "#ffd080",
+        "#a07040",
+        "#e08060",
+        "#e0a060",
+        "#f0e0c0"
+      ]
+    }
+  },
+  "art": {
+    "seed": 1978,
+    "base_color": "#100804",
+    "layers": [
+      {
+        "id": "afterglow",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.1,
+        "parallax": { "vertical": 0.03, "horizontal": 0 },
+        "params": {
+          "blob_count": 5,
+          "ramp": ["surface", "accent", "accent_alt"],
+          "alpha": 90,
+          "threshold": 8,
+          "spread": 120
+        }
+      },
+      {
+        "id": "sparks",
+        "primitive": "starfield",
+        "scale": 2,
+        "opacity": 0.35,
+        "parallax": { "vertical": 0.08, "horizontal": 0 },
+        "params": {
+          "count": 70,
+          "crosses": 3,
+          "colors": ["accent", "accent_alt", "fg_dim"],
+          "alpha": 160
+        }
+      },
+      {
+        "id": "bloom",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.08,
+        "parallax": { "vertical": 0.02, "horizontal": 0 },
+        "params": {
+          "direction": "center",
+          "colors": ["accent", "accent_alt"],
+          "alpha": 70,
+          "strength": 45
+        }
+      },
+      {
+        "id": "scan",
+        "primitive": "scanlines",
+        "scale": 2,
+        "opacity": 0.55,
+        "parallax": { "vertical": 0, "horizontal": 0 },
+        "params": {
+          "period": 3,
+          "thickness": 1,
+          "alpha": 50,
+          "color": "bg"
+        }
+      },
+      {
+        "id": "roll",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.05,
+        "parallax": { "vertical": 0.4, "horizontal": 0 },
+        "params": {
+          "direction": "top",
+          "colors": ["accent"],
+          "alpha": 60,
+          "strength": 35
+        }
+      },
+      {
+        "id": "tube",
+        "primitive": "vignette",
+        "scale": 4,
+        "opacity": 0.35,
+        "parallax": { "vertical": 0, "horizontal": 0 },
+        "params": {
+          "alpha": 160,
+          "color": "bg"
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#100804" },
+    {
+      "kind": "gradient",
+      "shape": "radial",
+      "colors": ["#1c1008", "#100804"],
+      "opacity": 0.45
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": false },
+    "auto_scroll": { "enabled": false, "speed": 0 }
+  },
+  "legibility": {
+    "text": "#e8d0a0",
+    "dim_text": "#906830",
+    "min_contrast": 3.0
+  }
+}

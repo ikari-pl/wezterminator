@@ -1,0 +1,27 @@
+---
+source: crates/wzt-tui/tests/snapshots.rs
+expression: shot
+---
+ wezterminator  ·  status (sparkline)  ·  save:local-preset  ·  t:toggle-style  
+┌ Segments (space:toggle  s:save as local preset) ─────────────────────────────┐
+│>   1. [x] load                                                               │
+│    2. [x] memory                                                             │
+│    3. [x] memory_pressure                                                    │
+│    4. [ ] tailscale                                                          │
+│    5. [ ] warp  (unavailable)                                                │
+│    6. [x] battery                                                            │
+│    7. [x] cwd                                                                │
+│    8. [x] clock                                                              │
+│    9. [ ] workspace                                                          │
+│   10. [ ] exit_code                                                          │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+ status ────────────────────────────────────────────────────────────────────────
+wezterm preview
