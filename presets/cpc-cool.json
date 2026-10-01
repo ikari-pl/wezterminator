@@ -39,7 +39,7 @@
       "segments": [
         "load",
         "memory",
-        "pressure",
+        "memory_pressure",
         "battery",
         "cwd",
         "clock"

@@ -70,13 +70,7 @@ fn assert_all_round_trip<T: DeserializeOwned + Serialize>(files: &[PathBuf]) {
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
 
-// KNOWN DATA DRIFT (U4, not U5): presets/cpc-cool.json and presets/ember.json
-// list the status segment "pressure", but schema/preset.schema.json (U1) names
-// it "memory_pressure". The typed model follows the schema, so it rejects both
-// files. Fix the presets (or the schema) and remove this `ignore`.
-// Run with: cargo test -p wzt-model --test builtin -- --ignored
 #[test]
-#[ignore = "presets/cpc-cool.json and presets/ember.json use segment `pressure`; the schema says `memory_pressure`"]
 fn built_in_presets_round_trip() {
     let files = preset_files();
     assert!(!files.is_empty(), "no built-in presets found");

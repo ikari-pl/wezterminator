@@ -5,13 +5,13 @@
 --                 cycle helpers below -- which only ever run from event
 --                 handlers and actions, NEVER during config evaluation.
 --   screens.json  device-pixel sizes of the connected screens. NOT watched.
---   engine.json   the resolved plugin directory and engine version, for the
---                 Rust side. NOT watched.
 --
--- screens.json and engine.json are separate files precisely so that writing
--- them can never trigger a reload: they are not on the watch list, and the
--- watch list names state.json itself, never its directory. Both are written
--- from a GUI event and only when their content actually changed.
+-- screens.json is a separate file precisely so that writing it can never
+-- trigger a reload: it is not on the watch list, and the watch list names
+-- state.json itself, never its directory. It is written from a GUI event and
+-- only when its content actually changed. The engine record (plugin directory
+-- and version, for the Rust side) lives in state.json's `engine` field per the
+-- data model; see record_engine for how that stays loop-free.
 --
 -- Every write is atomic (temp file, then rename).
 
@@ -305,17 +305,14 @@ function M.current_screens()
   return list
 end
 
---- Everything that is written from a GUI event: screens and engine info.
---- Safe to call repeatedly; each file is written only when it changed.
---- Returns { screens = bool, engine = bool }, or nil without a GUI.
+--- Everything that is written from a GUI event: screens (unwatched) and the
+--- engine record (state.json). Safe to call repeatedly; each is written only
+--- when it changed. Returns { screens = bool, engine = bool }.
 function M.record_environment(dirs, engine_info)
   local list = M.current_screens()
-  if not list then
-    return nil
-  end
   return {
-    screens = M.write_screens(dirs, list),
-    engine = M.write_engine(dirs, engine_info),
+    screens = list ~= nil and M.write_screens(dirs, list) or false,
+    engine = (M.record_engine(dirs, engine_info)) and true or false,
   }
 end
 

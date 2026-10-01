@@ -8,3 +8,6 @@
 
 # Personal snapshots of the original configs; belong in the private layer (wzt-0bj)
 sources/
+
+# Cargo build output
+/target/
