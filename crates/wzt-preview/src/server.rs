@@ -285,8 +285,15 @@ pub enum OpenOutcome {
     PrintedUrl,
 }
 
-/// Open `url` with the platform opener, or print it when headless.
+/// Open `url` with the platform opener, or print it when headless / suppressed.
+///
+/// Set `WZT_NO_OPEN=1` to never launch a browser (tests and CI must set this, or
+/// rely on `cfg!(test)` when exercising this crate's own test binary).
 pub fn open_or_print_url(url: &str) -> Result<OpenOutcome, ServerError> {
+    if suppress_browser_open() {
+        println!("wezterminator preview: {url}");
+        return Ok(OpenOutcome::PrintedUrl);
+    }
     if !display_available() {
         println!("wezterminator preview: {url}");
         return Ok(OpenOutcome::PrintedUrl);
@@ -300,6 +307,17 @@ pub fn open_or_print_url(url: &str) -> Result<OpenOutcome, ServerError> {
             Ok(OpenOutcome::PrintedUrl)
         }
     }
+}
+
+/// True when browser launching must not happen.
+///
+/// - `WZT_NO_OPEN` set (and not `0`) — tests/CI should export this
+/// - `cfg!(test)` when compiling this crate's unit tests
+pub fn suppress_browser_open() -> bool {
+    if cfg!(test) {
+        return true;
+    }
+    std::env::var_os("WZT_NO_OPEN").is_some_and(|v| v != "0")
 }
 
 /// Whether a graphical session looks available.
@@ -532,4 +550,17 @@ pub fn http_exchange(
         .unwrap_or(0);
     let body = buf[header_end + 4..].to_vec();
     Ok((status, body))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn open_or_print_is_suppressed_under_cfg_test() {
+        assert!(suppress_browser_open());
+        let server = PreviewServer::start().expect("start");
+        let outcome = server.open_or_print().expect("open_or_print");
+        assert_eq!(outcome, OpenOutcome::PrintedUrl);
+    }
 }

@@ -66,7 +66,8 @@ pub const DEFAULT_EXPIRY_SECS: u64 = 3;
 /// How often the TUI renews expiry.
 pub const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(1);
 /// How long to wait for a probe ack before falling back to browser mode.
-pub const ACK_TIMEOUT: Duration = Duration::from_millis(750);
+/// WezTerm must parse the OSC, run Lua, and `send_text` the APC back.
+pub const ACK_TIMEOUT: Duration = Duration::from_secs(2);
 
 /// Minimum gap between OSC writes (rate limit).
 pub const MIN_WRITE_INTERVAL: Duration = Duration::from_millis(40);

@@ -490,7 +490,12 @@ pub enum Msg {
     Quit,
     Tick,
     Ack(u64),
-    HandshakeDone { wezterm: bool },
+    HandshakeDone {
+        /// True when the probe ack arrived (live WezTerm + plugin).
+        wezterm: bool,
+        /// True when `WEZTERM_PANE` was set (used for failure messaging).
+        pane_env: bool,
+    },
     CommitOk(String),
     CommitErr(String),
     /// Toggle / adjust on editor screens.
@@ -677,7 +682,7 @@ pub fn update(model: &mut Model, msg: Msg) -> Vec<Effect> {
                 effects.extend(preview_selection(model, &row.id, model.draft_parts.clone()));
             }
         }
-        Msg::HandshakeDone { wezterm } => {
+        Msg::HandshakeDone { wezterm, pane_env } => {
             if wezterm {
                 model.mode = PreviewMode::WezTerm;
                 model.status = "wezterm preview".into();
@@ -686,7 +691,12 @@ pub fn update(model: &mut Model, msg: Msg) -> Vec<Effect> {
                 }
             } else {
                 model.mode = PreviewMode::Browser;
-                model.status = "browser mode (approximate preview; server in U14)".into();
+                model.status = if pane_env {
+                    "WezTerm pane seen but no ack — install the plugin (`wezterminator install`) or pass --wezterm; browser fallback"
+                        .into()
+                } else {
+                    "browser mode (no WEZTERM_PANE)".into()
+                };
                 effects.push(Effect::OpenBrowserStub);
             }
         }
@@ -1053,7 +1063,13 @@ impl Model {
             preset_state.select(Some(0));
         }
 
-        let mode = opts.force_mode.unwrap_or(PreviewMode::Browser);
+        let mode = opts.force_mode.unwrap_or_else(|| {
+            if wezterm_pane_set() {
+                PreviewMode::WezTerm
+            } else {
+                PreviewMode::Browser
+            }
+        });
         let (draft_parts, draft_based_on) = if let Some(resolved) = &resolution.resolved {
             (
                 Some(resolved.parts.clone()),
@@ -1372,21 +1388,34 @@ pub fn run(paths: &Paths, opts: RunOptions) -> Result<(), AppError> {
             &mut model,
             Msg::HandshakeDone {
                 wezterm: attempt_wezterm && opts.force_mode == Some(PreviewMode::WezTerm),
+                pane_env: attempt_wezterm,
             },
         );
         apply_effects(&effects, &mut transport, tmux)?;
     } else if attempt_wezterm {
         model.seq += 1;
         let probe_seq = model.seq;
+        model.status = "probing WezTerm…".into();
         apply_effects(&[Effect::Probe { seq: probe_seq }], &mut transport, tmux)?;
+        // Probe goes to stdout; flush so WezTerm parses OSC before we wait.
+        let _ = io::Write::flush(&mut io::stdout());
         let acked = wait_for_ack(probe_seq, ACK_TIMEOUT)?;
         let effects = update(
             &mut model,
-            Msg::HandshakeDone { wezterm: acked },
+            Msg::HandshakeDone {
+                wezterm: acked,
+                pane_env: true,
+            },
         );
         apply_effects(&effects, &mut transport, tmux)?;
     } else {
-        let effects = update(&mut model, Msg::HandshakeDone { wezterm: false });
+        let effects = update(
+            &mut model,
+            Msg::HandshakeDone {
+                wezterm: false,
+                pane_env: false,
+            },
+        );
         apply_effects(&effects, &mut transport, tmux)?;
     }
 
@@ -1396,7 +1425,81 @@ pub fn run(paths: &Paths, opts: RunOptions) -> Result<(), AppError> {
     result
 }
 
+/// Wait for an APC ack on stdin.
+///
+/// `pane:send_text` injects raw bytes into the TUI's stdin — not a crossterm
+/// paste event — so we poll the fd and feed [`AckParser`] directly.
 fn wait_for_ack(expected: u64, timeout: Duration) -> Result<bool, AppError> {
+    #[cfg(unix)]
+    {
+        wait_for_ack_unix(expected, timeout)
+    }
+    #[cfg(not(unix))]
+    {
+        wait_for_ack_crossterm(expected, timeout)
+    }
+}
+
+#[cfg(unix)]
+fn wait_for_ack_unix(expected: u64, timeout: Duration) -> Result<bool, AppError> {
+    use std::io::Read;
+    use std::os::fd::AsFd;
+
+    use rustix::event::{PollFd, PollFlags, Timespec, poll};
+    use rustix::fs::{OFlags, fcntl_getfl, fcntl_setfl};
+    use rustix::io::Errno;
+
+    let stdin = io::stdin();
+    let fd = stdin.as_fd();
+    let mut parser = AckParser::new();
+    let deadline = Instant::now() + timeout;
+    let mut buf = [0u8; 512];
+
+    let flags = fcntl_getfl(fd).map_err(io::Error::from)?;
+    fcntl_setfl(fd, flags | OFlags::NONBLOCK).map_err(io::Error::from)?;
+
+    let mut acked = false;
+    while Instant::now() < deadline {
+        let remain = deadline.saturating_duration_since(Instant::now());
+        let ts = Timespec {
+            tv_sec: remain.as_secs() as _,
+            tv_nsec: remain.subsec_nanos() as _,
+        };
+        let mut fds = [PollFd::new(&fd, PollFlags::IN)];
+        match poll(&mut fds, Some(&ts)) {
+            Ok(0) => continue,
+            Ok(_) => {}
+            Err(Errno::INTR) => continue,
+            Err(e) => return Err(AppError::Io(io::Error::from(e))),
+        }
+
+        loop {
+            match stdin.lock().read(&mut buf) {
+                Ok(0) => break,
+                Ok(n) => {
+                    let (acks, _) = parser.push(&buf[..n]);
+                    if acks.contains(&expected) {
+                        acked = true;
+                        break;
+                    }
+                }
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => break,
+                Err(e) if e.kind() == io::ErrorKind::Interrupted => continue,
+                Err(e) => return Err(AppError::Io(e)),
+            }
+        }
+        if acked {
+            break;
+        }
+    }
+
+    let _ = fcntl_setfl(fd, flags);
+    Ok(acked)
+}
+
+#[cfg(not(unix))]
+fn wait_for_ack_crossterm(expected: u64, timeout: Duration) -> Result<bool, AppError> {
+    // Fallback: also accept paste events (some hosts deliver send_text that way).
     ratatui::crossterm::terminal::enable_raw_mode()?;
     let mut parser = AckParser::new();
     let deadline = Instant::now() + timeout;
@@ -1405,7 +1508,6 @@ fn wait_for_ack(expected: u64, timeout: Duration) -> Result<bool, AppError> {
         let remain = deadline.saturating_duration_since(Instant::now());
         if event::poll(remain.min(Duration::from_millis(50)))? {
             match event::read()? {
-                Event::Key(_) => {}
                 Event::Paste(s) => {
                     let (acks, _) = parser.push(s.as_bytes());
                     if acks.contains(&expected) {
@@ -1413,12 +1515,15 @@ fn wait_for_ack(expected: u64, timeout: Duration) -> Result<bool, AppError> {
                         break;
                     }
                 }
+                Event::Key(key) => {
+                    // Reconstruct printable runs poorly; ignore.
+                    let _ = key;
+                }
                 _ => {}
             }
         }
     }
-    let _ = parser;
-    ratatui::crossterm::terminal::disable_raw_mode()?;
+    let _ = ratatui::crossterm::terminal::disable_raw_mode();
     Ok(acked)
 }
 
@@ -1807,9 +1912,20 @@ mod tests {
     fn handshake_timeout_opens_browser_stub() {
         let mut model = sample_model();
         model.mode = PreviewMode::WezTerm;
-        let effects = update(&mut model, Msg::HandshakeDone { wezterm: false });
+        let effects = update(
+            &mut model,
+            Msg::HandshakeDone {
+                wezterm: false,
+                pane_env: true,
+            },
+        );
         assert_eq!(model.mode, PreviewMode::Browser);
         assert!(matches!(effects[0], Effect::OpenBrowserStub));
+        assert!(
+            model.status.contains("no ack") || model.status.contains("plugin"),
+            "status={}",
+            model.status
+        );
     }
 
     #[test]

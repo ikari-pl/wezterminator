@@ -15,5 +15,5 @@ pub use osc::{
 };
 pub use server::{
     OpenOutcome, PreviewColors, PreviewDocument, PreviewLayer, PreviewServer, ServerError,
-    display_available, host_allowed, http_exchange, open_or_print_url,
+    display_available, host_allowed, http_exchange, open_or_print_url, suppress_browser_open,
 };

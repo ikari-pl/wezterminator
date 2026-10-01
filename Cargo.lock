@@ -2506,6 +2506,7 @@ version = "0.1.0"
 dependencies = [
  "insta",
  "ratatui",
+ "rustix",
  "serde",
  "serde_json",
  "tempfile",
