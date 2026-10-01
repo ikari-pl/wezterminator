@@ -1,0 +1,220 @@
+{
+  "_": "Isometric town feel with repeating horizontal strips. SimCity 2000-inspired palette mood; original procedural art, no trademarks.",
+  "schema_version": 1,
+  "id": "builtin:isoville",
+  "name": "Isoville",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#0e1a1c",
+      "surface": "#1a3034",
+      "fg": "#e0f0e8",
+      "fg_dim": "#688078",
+      "accent": "#f08040",
+      "accent_alt": "#40a090",
+      "ok": "#60c070",
+      "warn": "#f0b040",
+      "bad": "#e05050",
+      "info": "#50b0c0",
+      "tab_bar_bg": "#0e1a1c",
+      "tab_active_bg": "#1a3034",
+      "tab_active_fg": "#f08040",
+      "tab_inactive_bg": "#0e1a1c",
+      "tab_inactive_fg": "#688078",
+      "tab_hover_bg": "#243840",
+      "tab_hover_fg": "#e0f0e8"
+    },
+    "scheme": {
+      "_": "Teal terrain with warm civic accent, era-palette mood without copying art.",
+      "foreground": "#d0e4dc",
+      "background": "#0e1a1c",
+      "cursor_bg": "#f08040",
+      "cursor_fg": "#0e1a1c",
+      "selection_bg": "#1a3034",
+      "selection_fg": "#d0e4dc",
+      "ansi": [
+        "#0e1a1c",
+        "#e05050",
+        "#60c070",
+        "#f0b040",
+        "#307080",
+        "#a06070",
+        "#40a090",
+        "#809088"
+      ],
+      "brights": [
+        "#688078",
+        "#f07070",
+        "#80e090",
+        "#f0d060",
+        "#50b0c0",
+        "#c08090",
+        "#60c0b0",
+        "#e0f0e8"
+      ]
+    }
+  },
+  "art": {
+    "seed": 1993,
+    "base_color": "#0e1a1c",
+    "layers": [
+      {
+        "id": "sky",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.1,
+        "parallax": { "vertical": 0, "horizontal": 0.05 },
+        "params": {
+          "direction": "top",
+          "colors": ["info", "surface"],
+          "alpha": 65,
+          "strength": 35
+        }
+      },
+      {
+        "id": "terrain",
+        "primitive": "isometric_tiles",
+        "scale": 4,
+        "opacity": 0.28,
+        "parallax": { "vertical": 0.08, "horizontal": 0.4 },
+        "params": {
+          "tile": 16,
+          "fill": 40,
+          "colors": ["surface", "accent_alt", "#2a5048", "ok"],
+          "edge": "fg_dim",
+          "edge_alpha": 90,
+          "fill_alpha": 70
+        }
+      },
+      {
+        "id": "blocks",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.35,
+        "parallax": { "vertical": 0.1, "horizontal": 0.55 },
+        "params": {
+          "cell": 32,
+          "chance": 16,
+          "sprites": [
+            {
+              "rows": [
+                "..oo..",
+                ".oOOo.",
+                "oOOOOo",
+                "oOOOOO",
+                ".bbbb."
+              ],
+              "colors": {
+                "o": "accent",
+                "O": "#c06030",
+                "b": "surface"
+              }
+            },
+            {
+              "rows": [
+                "...t..",
+                "..ttt.",
+                ".tTtTt",
+                "tttttt",
+                ".ssss."
+              ],
+              "colors": {
+                "t": "accent_alt",
+                "T": "info",
+                "s": "#284038"
+              }
+            },
+            {
+              "rows": [
+                ".gg.",
+                "gGGg",
+                "gGGg",
+                ".rr."
+              ],
+              "colors": {
+                "g": "ok",
+                "G": "#408050",
+                "r": "#3a3020"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "horizon",
+        "primitive": "silhouette_bands",
+        "scale": 4,
+        "opacity": 0.15,
+        "parallax": { "vertical": 0.15, "horizontal": 0.25 },
+        "params": {
+          "bands": 2,
+          "height": 28,
+          "feature": 48,
+          "alpha": 160,
+          "colors": ["#152830", "surface"]
+        }
+      },
+      {
+        "id": "strip",
+        "primitive": "sprite_strip",
+        "scale": 4,
+        "opacity": 0.3,
+        "parallax": { "vertical": 0, "horizontal": 0.7 },
+        "params": {
+          "y": 78,
+          "gap": 4,
+          "order": "cycle",
+          "sprites": [
+            {
+              "rows": [
+                ".r.",
+                "rrr",
+                "rRr",
+                "rrr"
+              ],
+              "colors": { "r": "accent", "R": "warn" }
+            },
+            {
+              "rows": [
+                ".c.",
+                "ccc",
+                "cCc",
+                "ccc"
+              ],
+              "colors": { "c": "accent_alt", "C": "info" }
+            },
+            {
+              "rows": [
+                ".g.",
+                "ggg",
+                "gGg",
+                "ggg"
+              ],
+              "colors": { "g": "ok", "G": "#308040" }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#0e1a1c" },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": ["#0e1a1c", "#1a3034"],
+      "opacity": 0.4
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": true },
+    "auto_scroll": { "enabled": true, "speed": 6, "axis": "horizontal" }
+  },
+  "legibility": {
+    "text": "#d0e4dc",
+    "dim_text": "#688078",
+    "min_contrast": 3.0
+  }
+}

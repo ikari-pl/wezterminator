@@ -24,10 +24,11 @@
 -- RANGE below only bounds the virtual position so it cannot wind up unbounded.
 --
 -- AUTO-SCROLL: speed is pixels per TICK, wrapping at the strip width (the art
--- resolution on that axis). A tick is an `update-status` firing. Each tick
--- costs at most ONE aggregator write, and none when auto-scroll is off. A
--- finer timer (wezterm.time.call_after) can drive `M.tick` later; the tick
--- function is the unit that is tested.
+-- resolution on that axis). When enabled, ticks are driven by
+-- `wezterm.time.call_after` on the focused window only (not the 1 Hz
+-- `update-status` heartbeat). Each tick costs at most ONE aggregator write,
+-- and none when auto-scroll is off. `M.tick` is the unit under test;
+-- `M.setup` only schedules it.
 
 local wezterm = require 'wezterm'
 local platform = require 'wzt.platform'
@@ -46,6 +47,9 @@ M.RANGE = 1300
 M.THROTTLE_MS = 24
 --- Strip size when the art resolution is unknown.
 M.DEFAULT_STRIP = { horizontal = 1920, vertical = 1080 }
+--- Auto-scroll frame interval in seconds (starting guess from the plan; U10
+--- measures the per-write cost on metis).
+M.TICK_S = 0.05
 
 ---------------------------------------------------------------------------
 -- Helpers
@@ -196,6 +200,22 @@ end
 -- Auto-scroll tick
 ---------------------------------------------------------------------------
 
+--- Flush a throttled wheel position without advancing auto-scroll. Used by the
+--- 1 Hz status tick while the call_after loop owns auto-scroll.
+function M.flush_dirty(window)
+  local all = load_all()
+  local key = window_key(window)
+  local rec = all[key] or {}
+  if not rec.dirty or rec.disabled then
+    return false
+  end
+  rec.dirty = false
+  rec.last_ms = now_ms()
+  all[key] = rec
+  platform.store_set(STORE_KEY, all)
+  return overrides.set_channel(window, 'parallax', rec.pos or { vertical = 0, horizontal = 0 })
+end
+
 --- Advance one tick. `motion` is the resolved preset's motion part. Also
 --- flushes a wheel position that was throttled. At most one aggregator write;
 --- none when auto-scroll is off and nothing is waiting. Returns true when
@@ -234,6 +254,50 @@ function M.tick(window, motion)
   all[key] = rec
   platform.store_set(STORE_KEY, all)
   return overrides.set_channels(window, updates)
+end
+
+local function auto_enabled(motion)
+  local auto = motion and motion.auto_scroll
+  return auto and auto.enabled and (tonumber(auto.speed) or 0) > 0
+end
+
+local function focused_windows()
+  if not (wezterm.gui and type(wezterm.gui.gui_windows) == 'function') then
+    return {}
+  end
+  local ok, list = pcall(wezterm.gui.gui_windows)
+  if not ok or type(list) ~= 'table' then
+    return {}
+  end
+  local out = {}
+  for _, window in ipairs(list) do
+    local fok, focused = pcall(function()
+      return window:is_focused()
+    end)
+    -- Builds without is_focused treat every window as focused.
+    if not fok or focused then
+      out[#out + 1] = window
+    end
+  end
+  return out
+end
+
+--- Schedule the next auto-scroll frame. Exposed for tests that drive the timer
+--- without waiting on real wall clock.
+function M.schedule(motion)
+  if not auto_enabled(motion) then
+    return false
+  end
+  if not (wezterm.time and type(wezterm.time.call_after) == 'function') then
+    return false
+  end
+  wezterm.time.call_after(M.TICK_S, function()
+    for _, window in ipairs(focused_windows()) do
+      M.tick(window, motion)
+    end
+    M.schedule(motion)
+  end)
+  return true
 end
 
 ---------------------------------------------------------------------------
@@ -297,12 +361,23 @@ function M.mouse_bindings(motion)
   return out
 end
 
---- Register the per-tick handler. `ctx.motion` is the resolved motion part.
+--- Register handlers. `ctx.motion` is the resolved motion part.
+--- Auto-scroll uses `wezterm.time.call_after` on focused windows only.
+--- `update-status` still flushes a throttled wheel position (and, when
+--- auto-scroll is off, runs `M.tick` so a switched-off channel is cleared).
 function M.setup(ctx)
   local motion = ctx.motion
+  local auto_on = auto_enabled(motion)
   wezterm.on('update-status', function(window)
-    M.tick(window, motion)
+    if auto_on then
+      M.flush_dirty(window)
+    else
+      M.tick(window, motion)
+    end
   end)
+  if auto_on then
+    M.schedule(motion)
+  end
 end
 
 return M

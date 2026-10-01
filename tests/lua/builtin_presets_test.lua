@@ -1,4 +1,4 @@
--- Built-in presets (U4 origin + U9 new): resolve with no other layers, and with art absent.
+-- Built-in presets (U4 origin + U9 new + U10 game): resolve with no other layers, and with art absent.
 
 local T = ...
 local resolve = T.resolve
@@ -10,6 +10,13 @@ local NEW_PRESETS = {
   'builtin:abyssal',
   'builtin:washi',
   'builtin:wycinanki',
+}
+
+local GAME_PRESETS = {
+  'builtin:platformer',
+  'builtin:brickfield',
+  'builtin:gravekeep',
+  'builtin:isoville',
 }
 
 local function load_builtins()
@@ -40,8 +47,8 @@ end
 
 T.test('every built-in preset resolves with no fleet or local layer', function()
   local presets, themes = load_builtins()
-  T.ok(#presets >= 8)
-  T.ok(#themes >= 8)
+  T.ok(#presets >= 12)
+  T.ok(#themes >= 12)
   for _, p in ipairs(presets) do
     local out = resolve_id(presets, themes, p.id)
     T.eq(out.error, nil, p.id)
@@ -62,6 +69,30 @@ T.test('U9 new presets resolve with art absent (fallback layers only)', function
   end
 end)
 
+T.test('U10 game presets resolve with art absent (fallback layers only)', function()
+  local presets, themes = load_builtins()
+  for _, id in ipairs(GAME_PRESETS) do
+    local out = resolve_id(presets, themes, id)
+    T.eq(out.error, nil, id)
+    T.eq(out.resolved.id, id)
+    local layers = out.resolved.parts.art.fallback_layers
+    T.ok(resolve.is_array(layers) and #layers >= 1, id .. ' has fallback layers')
+    T.ok(out.resolved.parts.art.layers ~= nil, id .. ' keeps recipe layers for when art is present')
+  end
+end)
+
+T.test('U10 Platformer and Isoville enable horizontal auto-scroll', function()
+  local presets, themes = load_builtins()
+  for _, id in ipairs({ 'builtin:platformer', 'builtin:isoville' }) do
+    local out = resolve_id(presets, themes, id)
+    local motion = out.resolved.parts.motion
+    T.eq(motion.auto_scroll.enabled, true, id)
+    T.eq(motion.auto_scroll.axis, 'horizontal', id)
+    T.ok((tonumber(motion.auto_scroll.speed) or 0) > 0, id .. ' has positive speed')
+    T.eq(motion.alt_wheel_scroll.horizontal, true, id)
+  end
+end)
+
 T.test('U9 Washi is the only light variant among new themes', function()
   local _, themes = load_builtins()
   local by_id = {}
@@ -72,6 +103,9 @@ T.test('U9 Washi is the only light variant among new themes', function()
   for _, id in ipairs({
     'builtin:phosphor', 'builtin:amber', 'builtin:abyssal', 'builtin:wycinanki',
   }) do
+    T.eq(by_id[id].variant, 'dark', id)
+  end
+  for _, id in ipairs(GAME_PRESETS) do
     T.eq(by_id[id].variant, 'dark', id)
   end
 end)

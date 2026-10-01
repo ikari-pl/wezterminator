@@ -1,0 +1,192 @@
+{
+  "_": "Side-scrolling world with horizontal parallax: hills, clouds, brick strata. Mario Bros-inspired; original procedural art, no trademarks.",
+  "schema_version": 1,
+  "id": "builtin:platformer",
+  "name": "Platformer",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#0a1628",
+      "surface": "#143050",
+      "fg": "#e8f0ff",
+      "fg_dim": "#6a88a8",
+      "accent": "#f0c040",
+      "accent_alt": "#40c070",
+      "ok": "#40c070",
+      "warn": "#f0a040",
+      "bad": "#e05050",
+      "info": "#50a0e0",
+      "tab_bar_bg": "#0a1628",
+      "tab_active_bg": "#143050",
+      "tab_active_fg": "#f0c040",
+      "tab_inactive_bg": "#0a1628",
+      "tab_inactive_fg": "#6a88a8",
+      "tab_hover_bg": "#1a4060",
+      "tab_hover_fg": "#e8f0ff"
+    },
+    "scheme": {
+      "_": "Clear sky terminal: pale text on deep dusk blue.",
+      "foreground": "#d8e4f0",
+      "background": "#0a1628",
+      "cursor_bg": "#f0c040",
+      "cursor_fg": "#0a1628",
+      "selection_bg": "#143050",
+      "selection_fg": "#d8e4f0",
+      "ansi": [
+        "#0a1628",
+        "#e05050",
+        "#40c070",
+        "#f0c040",
+        "#3070b0",
+        "#c060a0",
+        "#40a0b0",
+        "#90a8c0"
+      ],
+      "brights": [
+        "#6a88a8",
+        "#f07070",
+        "#60e090",
+        "#f0d060",
+        "#50a0e0",
+        "#e080c0",
+        "#60c0d0",
+        "#e8f0ff"
+      ]
+    }
+  },
+  "art": {
+    "seed": 1985,
+    "base_color": "#0a1628",
+    "layers": [
+      {
+        "id": "sky",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.12,
+        "parallax": { "vertical": 0, "horizontal": 0.02 },
+        "params": {
+          "direction": "top",
+          "colors": ["info", "surface"],
+          "alpha": 70,
+          "strength": 40
+        }
+      },
+      {
+        "id": "clouds",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.35,
+        "parallax": { "vertical": 0.02, "horizontal": 0.15 },
+        "params": {
+          "cell": 32,
+          "chance": 28,
+          "sprites": [
+            {
+              "rows": [
+                "..www..",
+                ".wwwww.",
+                "wwwwwww",
+                ".wwwww."
+              ],
+              "colors": { "w": "fg" }
+            },
+            {
+              "rows": [
+                "...ww..",
+                ".wwwww.",
+                "wwwwwww"
+              ],
+              "colors": { "w": "fg_dim" }
+            }
+          ]
+        }
+      },
+      {
+        "id": "hills",
+        "primitive": "silhouette_bands",
+        "scale": 4,
+        "opacity": 0.22,
+        "parallax": { "vertical": 0.05, "horizontal": 0.35 },
+        "params": {
+          "bands": 3,
+          "height": 40,
+          "feature": 64,
+          "alpha": 180,
+          "colors": ["#1a3a28", "accent_alt", "#286040"]
+        }
+      },
+      {
+        "id": "bricks",
+        "primitive": "sprite_strip",
+        "scale": 4,
+        "opacity": 0.4,
+        "parallax": { "vertical": 0, "horizontal": 0.7 },
+        "params": {
+          "y": 92,
+          "gap": 0,
+          "order": "cycle",
+          "sprites": [
+            {
+              "rows": [
+                "BBBB",
+                "BmmB",
+                "BmMB",
+                "BBBB"
+              ],
+              "colors": {
+                "B": "warn",
+                "m": "#c07030",
+                "M": "#a05820"
+              }
+            },
+            {
+              "rows": [
+                "GGGG",
+                "GggG",
+                "GgGG",
+                "GGGG"
+              ],
+              "colors": {
+                "G": "accent_alt",
+                "g": "#308050"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "ground",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.15,
+        "parallax": { "vertical": 0, "horizontal": 0.8 },
+        "params": {
+          "direction": "bottom",
+          "colors": ["#3a2818", "warn"],
+          "alpha": 90,
+          "strength": 50
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#0a1628" },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": ["#0a1628", "#143050"],
+      "opacity": 0.4
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": true },
+    "auto_scroll": { "enabled": true, "speed": 8, "axis": "horizontal" }
+  },
+  "legibility": {
+    "text": "#d8e4f0",
+    "dim_text": "#6a88a8",
+    "min_contrast": 3.0
+  }
+}

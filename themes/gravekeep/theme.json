@@ -1,0 +1,220 @@
+{
+  "_": "Moody pixel graveyard: fog banks, gravestones, crooked trees, lantern glow. Graveyard Keeper-inspired; original procedural art, no trademarks.",
+  "schema_version": 1,
+  "id": "builtin:gravekeep",
+  "name": "Gravekeep",
+  "variant": "dark",
+  "palette": {
+    "ui": {
+      "bg": "#0c100c",
+      "surface": "#1a2418",
+      "fg": "#c8d0b8",
+      "fg_dim": "#788070",
+      "accent": "#e0a040",
+      "accent_alt": "#608050",
+      "ok": "#70a060",
+      "warn": "#e09040",
+      "bad": "#a04040",
+      "info": "#709080",
+      "tab_bar_bg": "#0c100c",
+      "tab_active_bg": "#1a2418",
+      "tab_active_fg": "#e0a040",
+      "tab_inactive_bg": "#0c100c",
+      "tab_inactive_fg": "#788070",
+      "tab_hover_bg": "#243020",
+      "tab_hover_fg": "#c8d0b8"
+    },
+    "scheme": {
+      "_": "Moss and lantern-warmth on near-black soil.",
+      "foreground": "#c0c8b0",
+      "background": "#0c100c",
+      "cursor_bg": "#e0a040",
+      "cursor_fg": "#0c100c",
+      "selection_bg": "#1a2418",
+      "selection_fg": "#c0c8b0",
+      "ansi": [
+        "#0c100c",
+        "#a04040",
+        "#608050",
+        "#e0a040",
+        "#405060",
+        "#705060",
+        "#507060",
+        "#808878"
+      ],
+      "brights": [
+        "#788070",
+        "#c06060",
+        "#80a070",
+        "#f0c060",
+        "#709080",
+        "#a07080",
+        "#80a090",
+        "#c8d0b8"
+      ]
+    }
+  },
+  "art": {
+    "seed": 2018,
+    "base_color": "#0c100c",
+    "layers": [
+      {
+        "id": "fog",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.1,
+        "parallax": { "vertical": 0.04, "horizontal": 0.12 },
+        "params": {
+          "blob_count": 5,
+          "ramp": ["surface", "fg_dim", "info"],
+          "alpha": 70,
+          "threshold": 12,
+          "spread": 140
+        }
+      },
+      {
+        "id": "mist",
+        "primitive": "dither_wash",
+        "scale": 4,
+        "opacity": 0.08,
+        "parallax": { "vertical": 0.02, "horizontal": 0.08 },
+        "params": {
+          "direction": "bottom",
+          "colors": ["fg_dim", "surface"],
+          "alpha": 50,
+          "strength": 40
+        }
+      },
+      {
+        "id": "trees",
+        "primitive": "silhouette_bands",
+        "scale": 4,
+        "opacity": 0.14,
+        "parallax": { "vertical": 0.06, "horizontal": 0.25 },
+        "params": {
+          "bands": 2,
+          "height": 50,
+          "feature": 40,
+          "roughness": 4,
+          "alpha": 160,
+          "colors": ["#141a12", "accent_alt"]
+        }
+      },
+      {
+        "id": "stones",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.28,
+        "parallax": { "vertical": 0.04, "horizontal": 0.4 },
+        "params": {
+          "cell": 48,
+          "chance": 10,
+          "sprites": [
+            {
+              "rows": [
+                ".sss.",
+                "sSSSs",
+                "sSSSs",
+                "sSSSs",
+                ".bbb."
+              ],
+              "colors": {
+                "s": "fg_dim",
+                "S": "fg",
+                "b": "#3a4030"
+              }
+            },
+            {
+              "rows": [
+                "..s..",
+                ".sSs.",
+                "sSSSs",
+                "sSSSs",
+                ".bbb."
+              ],
+              "colors": {
+                "s": "fg_dim",
+                "S": "#a0a890",
+                "b": "#2a3020"
+              }
+            },
+            {
+              "rows": [
+                "...t.",
+                "..t..",
+                ".ttt.",
+                "ttTtt",
+                "..r.."
+              ],
+              "colors": {
+                "t": "accent_alt",
+                "T": "#406030",
+                "r": "#3a2810"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "lanterns",
+        "primitive": "scattered_sprites",
+        "scale": 4,
+        "opacity": 0.28,
+        "parallax": { "vertical": 0.03, "horizontal": 0.45 },
+        "params": {
+          "cell": 40,
+          "chance": 14,
+          "sprites": [
+            {
+              "rows": [
+                "..y..",
+                ".yYy.",
+                "..p..",
+                "..p.."
+              ],
+              "colors": {
+                "y": "accent",
+                "Y": "warn",
+                "p": "#5a4030"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "glow",
+        "primitive": "cloud_blobs",
+        "scale": 4,
+        "opacity": 0.06,
+        "parallax": { "vertical": 0.02, "horizontal": 0.3 },
+        "params": {
+          "blob_count": 3,
+          "ramp": ["accent", "warn"],
+          "alpha": 60,
+          "threshold": 14,
+          "spread": 90
+        }
+      }
+    ]
+  },
+  "fallback_layers": [
+    { "kind": "color", "color": "#0c100c" },
+    {
+      "kind": "gradient",
+      "shape": "linear",
+      "angle": 90,
+      "colors": ["#0c100c", "#1a2418"],
+      "opacity": 0.4
+    }
+  ],
+  "motion": {
+    "scrollback_parallax": true,
+    "alt_wheel_scroll": { "vertical": true, "horizontal": true },
+    "auto_scroll": { "enabled": true, "speed": 3, "axis": "horizontal" }
+  },
+  "legibility": {
+    "text": "#c0c8b0",
+    "dim_text": "#788070",
+    "min_contrast": 3.0
+  }
+}

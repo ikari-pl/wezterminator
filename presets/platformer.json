@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "builtin:platformer",
+  "name": "Platformer",
+  "based_on": null,
+  "parts": {
+    "art": { "theme": "builtin:platformer" },
+    "scheme": { "theme": "builtin:platformer" },
+    "palette": { "theme": "builtin:platformer" },
+    "font": {
+      "preferred": ["Terminess Nerd Font Mono", "ProggyVector"],
+      "fallback": ["FiraCode Nerd Font Mono", "JetBrains Mono", "Menlo"],
+      "size": 14.0
+    },
+    "chrome": {
+      "opacity": 1.0,
+      "padding": { "left": 6, "right": 6, "top": 4, "bottom": 4 }
+    },
+    "status": {
+      "style": "sparkline",
+      "segments": ["load", "memory", "memory_pressure", "battery", "cwd", "clock"]
+    },
+    "motion": {
+      "scrollback_parallax": true,
+      "alt_wheel_scroll": { "vertical": true, "horizontal": true },
+      "auto_scroll": { "enabled": true, "speed": 8, "axis": "horizontal" }
+    }
+  }
+}
