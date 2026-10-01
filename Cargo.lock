@@ -2510,6 +2510,8 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
+ "wzt-art",
+ "wzt-fonts",
  "wzt-model",
  "wzt-preview",
 ]
