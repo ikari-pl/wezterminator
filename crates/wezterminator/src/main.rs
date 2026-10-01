@@ -1,16 +1,17 @@
 //! The `wezterminator` binary.
 //!
 //! Subcommands are stubs until their unit lands (`stats` is real, from U6;
-//! `art generate` and `art check` from U7; `doctor` from U11; `tui` from U12).
-//! Each stub accepts and ignores trailing arguments, so scripts written
-//! against the planned interface fail with the "not implemented" message
-//! rather than a usage error.
+//! `art generate` and `art check` from U7; `doctor` from U11; `tui` from U12;
+//! `install`/`uninstall` from U15). Each stub accepts and ignores trailing
+//! arguments, so scripts written against the planned interface fail with the
+//! "not implemented" message rather than a usage error.
 
 use std::path::PathBuf;
 use std::process::ExitCode;
 
 mod art;
 mod doctor;
+mod install;
 
 use clap::{Args, Parser, Subcommand};
 use wzt_model::Paths;
@@ -67,9 +68,9 @@ enum Command {
     /// Check fonts, art, screens and the install, and say what is wrong.
     Doctor(doctor::DoctorArgs),
     /// Install wezterminator in add-on, replace or replace-and-import mode.
-    Install(Pending),
+    Install(install::InstallArgs),
     /// Undo an install from its manifest.
-    Uninstall(Pending),
+    Uninstall(install::UninstallArgs),
     /// Attach, pull and promote presets for a private fleet repo.
     Fleet(Pending),
     /// Push the fleet layer to another machine over SSH.
@@ -85,8 +86,8 @@ impl Command {
             Command::Art(args) => args.command.stub(),
             Command::Stats(_) => None,
             Command::Doctor(_) => None,
-            Command::Install(_) => Some(("install", "U15")),
-            Command::Uninstall(_) => Some(("uninstall", "U15")),
+            Command::Install(_) => None,
+            Command::Uninstall(_) => None,
             Command::Fleet(_) => Some(("fleet", "U16")),
             Command::Push(_) => Some(("push", "U16")),
         }
@@ -212,10 +213,38 @@ fn main() -> ExitCode {
     if let Command::Tui(args) = &cli.command {
         return tui_command(args);
     }
+    if let Command::Install(args) = &cli.command {
+        return install_command(args);
+    }
+    if let Command::Uninstall(args) = &cli.command {
+        return uninstall_command(args);
+    }
     if let Some((name, unit)) = cli.command.stub() {
         eprintln!("wezterminator {name}: not implemented yet (planned in {unit})");
     }
     ExitCode::FAILURE
+}
+
+fn install_command(args: &install::InstallArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator install: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    install::run_install(&paths, args)
+}
+
+fn uninstall_command(args: &install::UninstallArgs) -> ExitCode {
+    let paths = match Paths::discover() {
+        Ok(paths) => paths,
+        Err(error) => {
+            eprintln!("wezterminator uninstall: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
+    install::run_uninstall(&paths, args)
 }
 
 #[cfg(test)]
@@ -238,7 +267,7 @@ mod tests {
     }
 
     #[test]
-    fn stats_art_doctor_and_tui_are_real_and_the_rest_are_still_stubs() {
+    fn stats_art_doctor_tui_and_install_are_real_and_the_rest_are_still_stubs() {
         let stub = |args: &[&str]| Cli::try_parse_from(args).unwrap().command.stub();
         assert_eq!(stub(&["wezterminator", "stats"]), None);
         assert_eq!(stub(&["wezterminator", "art", "generate", "cpc-cool", "--size", "3840x2160"]), None);
@@ -248,6 +277,17 @@ mod tests {
         assert_eq!(stub(&["wezterminator", "doctor"]), None);
         assert_eq!(stub(&["wezterminator", "tui"]), None);
         assert_eq!(stub(&["wezterminator", "tui", "--browser"]), None);
+        assert_eq!(
+            stub(&["wezterminator", "install", "--mode", "add-on", "--checkout", "/tmp/wzt"]),
+            None
+        );
+        assert_eq!(stub(&["wezterminator", "uninstall"]), None);
+    }
+
+    #[test]
+    fn install_requires_mode() {
+        assert!(Cli::try_parse_from(["wezterminator", "install"]).is_err());
+        assert!(Cli::try_parse_from(["wezterminator", "install", "--mode", "add-on"]).is_ok());
     }
 
     #[test]

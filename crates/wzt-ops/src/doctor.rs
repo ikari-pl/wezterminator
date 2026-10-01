@@ -524,12 +524,7 @@ pub fn collect(paths: &Paths, checkout: Option<&Path>) -> DoctorInput {
     let probes = probe_availability(machine.as_ref());
     let chrome_blur_supported = blur_supported();
 
-    let install = match state.as_ref().and_then(|s| s.install_mode) {
-        None => InstallCurrency::NotInstalled,
-        Some(_) => InstallCurrency::Unknown {
-            reason: "install manifest not available yet (U15)".into(),
-        },
-    };
+    let install = crate::install::install_currency(paths, checkout_owned.as_deref());
 
     DoctorInput {
         presets,
